@@ -5,711 +5,463 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PhimHay – Xem Phim Online</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+
+<!-- Vidstack -->
+<link rel="stylesheet" href="https://cdn.vidstack.io/player/theme.css">
+<link rel="stylesheet" href="https://cdn.vidstack.io/player/video.css">
+
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0f;--surface:#12121a;--card:#1a1a26;--border:#252535;
+  --accent:#e8173a;--gold:#f5c518;--text:#e8e8f0;--muted:#6a6a8a;
+  --nav-h:56px;--r:8px;
+  --fh:'Oswald',sans-serif;--fb:'Be Vietnam Pro',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);font-size:14px;line-height:1.6;min-height:100vh}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+a{color:inherit;text-decoration:none}
+button{font-family:var(--fb);cursor:pointer;border:none;background:none}
+img{display:block}
 
-  :root {
-    --bg:       #0a0a0f;
-    --surface:  #12121a;
-    --card:     #1a1a26;
-    --border:   #2a2a3a;
-    --accent:   #e8173a;
-    --accent2:  #ff6b35;
-    --gold:     #f5c518;
-    --text:     #e8e8f0;
-    --muted:    #7a7a9a;
-    --radius:   10px;
-    --font-head: 'Oswald', sans-serif;
-    --font-body: 'Be Vietnam Pro', sans-serif;
-  }
+/* ── NAV ── */
+#nav{
+  position:sticky;top:0;z-index:200;height:var(--nav-h);
+  background:rgba(10,10,15,.96);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:12px;padding:0 20px;
+}
+.logo{font-family:var(--fh);font-size:20px;font-weight:700;color:var(--accent);cursor:pointer;white-space:nowrap;letter-spacing:.5px}
+.logo em{color:var(--text);font-style:normal}
+.search-box{flex:1;max-width:400px;position:relative}
+.search-box input{
+  width:100%;background:var(--card);border:1px solid var(--border);
+  border-radius:20px;padding:7px 40px 7px 36px;
+  color:var(--text);font-family:var(--fb);font-size:13px;outline:none;
+  transition:border-color .2s
+}
+.search-box input:focus{border-color:var(--accent)}
+.search-box input::placeholder{color:var(--muted)}
+.search-box .si{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;font-size:14px}
+.search-box .sb{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:var(--accent);color:#fff;border-radius:14px;padding:3px 10px;font-size:11px;font-weight:700}
+.nav-menu{display:flex;gap:2px;align-items:center;overflow-x:auto;scrollbar-width:none}
+.nav-menu::-webkit-scrollbar{display:none}
+.nm-btn{color:var(--muted);font-size:13px;font-weight:500;padding:5px 11px;border-radius:6px;white-space:nowrap;transition:color .15s,background .15s}
+.nm-btn:hover,.nm-btn.act{color:var(--text);background:var(--card)}
+.nm-btn.act{color:var(--accent)}
 
-  html { scroll-behavior: smooth; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font-body);
-    min-height: 100vh;
-    font-size: 14px;
-    line-height: 1.6;
-  }
+/* dropdown */
+.dd{position:relative}
+.dd-menu{
+  display:none;position:absolute;top:calc(100% + 10px);left:0;
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:8px;min-width:220px;z-index:300;
+  box-shadow:0 20px 60px rgba(0,0,0,.7);max-height:70vh;overflow-y:auto
+}
+.dd.open .dd-menu{display:block}
+.dd-menu-inner{display:grid;grid-template-columns:1fr 1fr;gap:2px}
+.dd-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--accent);padding:4px 10px 6px;grid-column:span 2;border-bottom:1px solid var(--border);margin-bottom:4px}
+.dd-item{padding:7px 10px;border-radius:5px;color:var(--muted);font-size:12px;cursor:pointer;transition:color .15s,background .15s}
+.dd-item:hover{color:var(--text);background:var(--card)}
 
-  /* ── SCROLLBAR ── */
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: var(--bg); }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+/* ── LAYOUT ── */
+#app{max-width:1380px;margin:0 auto;padding:0 16px 60px}
 
-  /* ── NAV ── */
-  nav {
-    position: sticky; top: 0; z-index: 100;
-    background: rgba(10,10,15,0.92);
-    backdrop-filter: blur(14px);
-    border-bottom: 1px solid var(--border);
-    padding: 0 24px;
-    display: flex; align-items: center; gap: 16px;
-    height: 58px;
-  }
-  .logo {
-    font-family: var(--font-head);
-    font-size: 22px; font-weight: 700;
-    color: var(--accent);
-    letter-spacing: 1px;
-    cursor: pointer;
-    flex-shrink: 0;
-  }
-  .logo span { color: var(--text); }
+/* ── HERO ── */
+.hero{
+  margin:20px 0 32px;border-radius:12px;overflow:hidden;
+  position:relative;height:min(46vw,360px);background:var(--card);cursor:pointer
+}
+.hero-img{width:100%;height:100%;object-fit:cover;transition:transform .5s}
+.hero:hover .hero-img{transform:scale(1.03)}
+.hero-grad{
+  position:absolute;inset:0;
+  background:linear-gradient(100deg,rgba(10,10,15,.95) 0%,rgba(10,10,15,.6) 45%,rgba(10,10,15,.1) 100%)
+}
+.hero-body{position:absolute;inset:0;display:flex;align-items:center;padding:28px 40px}
+.hero-inner{max-width:460px}
+.hero-badge{display:inline-block;background:var(--accent);color:#fff;font-size:9px;font-weight:700;letter-spacing:1.5px;padding:3px 9px;border-radius:4px;text-transform:uppercase;margin-bottom:10px}
+.hero-title{font-family:var(--fh);font-size:clamp(18px,3.2vw,38px);font-weight:700;line-height:1.1;margin-bottom:6px}
+.hero-orig{color:var(--muted);font-size:12px;margin-bottom:10px}
+.hero-meta{display:flex;gap:10px;align-items:center;font-size:12px;color:var(--muted);flex-wrap:wrap;margin-bottom:14px}
+.hero-meta .star{color:var(--gold)}
+.mtag{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:4px;padding:2px 8px;font-size:11px;color:var(--text)}
+.hero-desc{font-size:12px;color:#9a9ab8;line-height:1.75;margin-bottom:16px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.hero-btns{display:flex;gap:8px}
+.btn-play{background:var(--accent);color:#fff;padding:9px 22px;border-radius:var(--r);font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px;transition:background .2s,transform .15s}
+.btn-play:hover{background:#c41230;transform:translateY(-1px)}
+.btn-more{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);color:#fff;padding:9px 18px;border-radius:var(--r);font-size:13px;font-weight:500;transition:background .2s}
+.btn-more:hover{background:rgba(255,255,255,.2)}
 
-  /* Search */
-  .search-wrap {
-    flex: 1; max-width: 420px;
-    position: relative;
-  }
-  .search-wrap input {
-    width: 100%;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 24px;
-    padding: 8px 18px 8px 40px;
-    color: var(--text);
-    font-family: var(--font-body);
-    font-size: 13px;
-    outline: none;
-    transition: border-color .2s;
-  }
-  .search-wrap input:focus { border-color: var(--accent); }
-  .search-wrap input::placeholder { color: var(--muted); }
-  .search-icon {
-    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
-    color: var(--muted); font-size: 14px; pointer-events: none;
-  }
-  .search-btn {
-    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
-    background: var(--accent); border: none; border-radius: 16px;
-    padding: 4px 12px; color: #fff; font-size: 12px; font-weight: 600;
-    cursor: pointer; font-family: var(--font-body);
-  }
+/* ── SECTION ── */
+.sec{margin-bottom:36px}
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.sec-title{font-family:var(--fh);font-size:16px;font-weight:600;display:flex;align-items:center;gap:8px}
+.sec-title::before{content:'';display:inline-block;width:3px;height:18px;background:var(--accent);border-radius:2px}
+.see-all{color:var(--muted);font-size:12px;border:1px solid var(--border);padding:4px 12px;border-radius:14px;transition:color .15s,border-color .15s}
+.see-all:hover{color:var(--accent);border-color:var(--accent)}
 
-  /* Nav pills */
-  .nav-links {
-    display: flex; gap: 4px; align-items: center; flex-shrink: 0;
-    overflow-x: auto; scrollbar-width: none;
-  }
-  .nav-links::-webkit-scrollbar { display: none; }
-  .nav-btn {
-    background: none; border: none; color: var(--muted);
-    font-family: var(--font-body); font-size: 13px; font-weight: 500;
-    padding: 6px 12px; border-radius: 6px; cursor: pointer;
-    white-space: nowrap; transition: color .2s, background .2s;
-  }
-  .nav-btn:hover, .nav-btn.active {
-    color: var(--text); background: var(--card);
-  }
-  .nav-btn.active { color: var(--accent); }
+/* ── GRID ── */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.card{border-radius:var(--r);overflow:hidden;background:var(--card);cursor:pointer;transition:transform .2s,box-shadow .2s}
+.card:hover{transform:translateY(-4px);box-shadow:0 12px 36px rgba(0,0,0,.6)}
+.card:hover .cover img{transform:scale(1.07)}
+.card:hover .cov-ov{opacity:1}
+.cover{position:relative;aspect-ratio:2/3;overflow:hidden;background:var(--surface)}
+.cover img{width:100%;height:100%;object-fit:cover;transition:transform .3s}
+.cov-ov{position:absolute;inset:0;background:rgba(10,10,15,.65);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s}
+.play-circle{width:44px;height:44px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;box-shadow:0 4px 18px rgba(232,23,58,.5)}
+.cbadges{position:absolute;top:6px;left:6px;display:flex;flex-direction:column;gap:3px}
+.cbadge{font-size:9px;font-weight:700;letter-spacing:.8px;padding:2px 6px;border-radius:3px;text-transform:uppercase}
+.bq{background:var(--accent);color:#fff}
+.be{background:rgba(0,0,0,.8);color:var(--gold);border:1px solid rgba(245,197,24,.25)}
+.cinfo{padding:8px 10px}
+.ctitle{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
+.csub{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-  /* ── MAIN ── */
-  #app { max-width: 1400px; margin: 0 auto; padding: 0 20px 60px; }
+/* ── CHIPS ── */
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.chip{background:var(--card);border:1px solid var(--border);color:var(--muted);font-size:12px;font-weight:500;padding:5px 14px;border-radius:16px;cursor:pointer;transition:all .15s}
+.chip:hover{color:var(--text);border-color:var(--muted)}
+.chip.act{background:var(--accent);border-color:var(--accent);color:#fff}
 
-  /* ── HERO / FEATURED ── */
-  .hero {
-    margin: 24px 0 36px;
-    border-radius: 16px;
-    overflow: hidden;
-    position: relative;
-    aspect-ratio: 21/8;
-    min-height: 240px;
-    background: var(--card);
-    cursor: pointer;
-  }
-  .hero-img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    display: block;
-    transition: transform .5s ease;
-  }
-  .hero:hover .hero-img { transform: scale(1.03); }
-  .hero-overlay {
-    position: absolute; inset: 0;
-    background: linear-gradient(90deg, rgba(10,10,15,.92) 0%, rgba(10,10,15,.5) 50%, transparent 100%);
-    display: flex; align-items: center;
-    padding: 32px 48px;
-  }
-  .hero-info { max-width: 480px; }
-  .hero-badge {
-    display: inline-block;
-    background: var(--accent); color: #fff;
-    font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
-    padding: 3px 10px; border-radius: 4px;
-    text-transform: uppercase; margin-bottom: 12px;
-  }
-  .hero-title {
-    font-family: var(--font-head);
-    font-size: clamp(22px, 3.5vw, 44px);
-    font-weight: 700; line-height: 1.1;
-    margin-bottom: 8px; color: #fff;
-  }
-  .hero-meta {
-    display: flex; gap: 14px; align-items: center;
-    color: var(--muted); font-size: 12px; margin-bottom: 14px; flex-wrap: wrap;
-  }
-  .hero-meta .star { color: var(--gold); }
-  .hero-desc {
-    font-size: 13px; color: #b0b0c8; line-height: 1.7;
-    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
-    overflow: hidden; margin-bottom: 20px;
-  }
-  .hero-actions { display: flex; gap: 10px; }
-  .btn-play {
-    background: var(--accent);
-    color: #fff; border: none;
-    padding: 10px 24px; border-radius: 8px;
-    font-family: var(--font-body); font-size: 14px; font-weight: 600;
-    cursor: pointer; display: flex; align-items: center; gap: 8px;
-    transition: background .2s, transform .15s;
-  }
-  .btn-play:hover { background: #c41230; transform: translateY(-1px); }
-  .btn-info {
-    background: rgba(255,255,255,.12);
-    color: #fff; border: 1px solid rgba(255,255,255,.2);
-    padding: 10px 20px; border-radius: 8px;
-    font-family: var(--font-body); font-size: 14px; font-weight: 500;
-    cursor: pointer; transition: background .2s;
-  }
-  .btn-info:hover { background: rgba(255,255,255,.2); }
+/* ── PAGE HEAD ── */
+.pg-head{padding-top:20px}
+.pg-title{font-family:var(--fh);font-size:22px;font-weight:700;margin-bottom:6px}
+.pg-sub{color:var(--muted);font-size:13px;margin-bottom:18px}
 
-  /* ── SECTION ── */
-  .section { margin-bottom: 40px; }
-  .section-head {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 16px; padding-bottom: 12px;
-    border-bottom: 1px solid var(--border);
-  }
-  .section-title {
-    font-family: var(--font-head);
-    font-size: 18px; font-weight: 600; color: var(--text);
-    display: flex; align-items: center; gap: 8px;
-  }
-  .section-title::before {
-    content: '';
-    display: inline-block; width: 4px; height: 20px;
-    background: var(--accent); border-radius: 2px;
-  }
-  .see-all {
-    background: none; border: 1px solid var(--border);
-    color: var(--muted); font-size: 12px; font-weight: 500;
-    padding: 5px 14px; border-radius: 16px; cursor: pointer;
-    font-family: var(--font-body);
-    transition: color .2s, border-color .2s;
-  }
-  .see-all:hover { color: var(--accent); border-color: var(--accent); }
+/* ── PAGINATION ── */
+.pages{display:flex;justify-content:center;gap:5px;margin-top:28px;flex-wrap:wrap}
+.pg{background:var(--card);border:1px solid var(--border);color:var(--muted);width:34px;height:34px;border-radius:6px;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.pg:hover{color:var(--text);border-color:var(--muted)}
+.pg.act{background:var(--accent);border-color:var(--accent);color:#fff}
+.pg:disabled{opacity:.35;cursor:not-allowed}
 
-  /* ── FILTER CHIPS ── */
-  .chip-row {
-    display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;
-  }
-  .chip {
-    background: var(--card); border: 1px solid var(--border);
-    color: var(--muted); font-size: 12px; font-weight: 500;
-    padding: 5px 14px; border-radius: 20px; cursor: pointer;
-    font-family: var(--font-body);
-    transition: all .2s;
-  }
-  .chip:hover { color: var(--text); border-color: var(--muted); }
-  .chip.active {
-    background: var(--accent); border-color: var(--accent);
-    color: #fff;
-  }
+/* ── WATCH PAGE ── */
+.watch-layout{display:grid;grid-template-columns:1fr 280px;gap:20px;padding-top:16px}
+@media(max-width:900px){.watch-layout{grid-template-columns:1fr}}
+.watch-main{}
+.watch-back{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:13px;margin-bottom:12px;cursor:pointer;width:fit-content;transition:color .15s}
+.watch-back:hover{color:var(--text)}
+.player-wrap{border-radius:10px;overflow:hidden;background:#000;aspect-ratio:16/9;position:relative}
+media-player{width:100%;height:100%}
 
-  /* ── GRID ── */
-  .movie-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 16px;
-  }
-  .movie-card {
-    background: var(--card);
-    border-radius: var(--radius);
-    overflow: hidden;
-    cursor: pointer;
-    transition: transform .2s, box-shadow .2s;
-    position: relative;
-  }
-  .movie-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 16px 40px rgba(0,0,0,.6);
-  }
-  .movie-card:hover .card-overlay { opacity: 1; }
-  .poster-wrap {
-    position: relative;
-    aspect-ratio: 2/3;
-    overflow: hidden;
-    background: var(--surface);
-  }
-  .poster-wrap img {
-    width: 100%; height: 100%; object-fit: cover;
-    display: block; transition: transform .3s;
-  }
-  .movie-card:hover .poster-wrap img { transform: scale(1.07); }
-  .card-overlay {
-    position: absolute; inset: 0;
-    background: rgba(10,10,15,.7);
-    display: flex; align-items: center; justify-content: center;
-    opacity: 0; transition: opacity .2s;
-  }
-  .play-icon {
-    width: 48px; height: 48px; border-radius: 50%;
-    background: var(--accent);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px; color: #fff;
-    box-shadow: 0 4px 20px rgba(232,23,58,.5);
-  }
-  .card-badges {
-    position: absolute; top: 8px; left: 8px;
-    display: flex; flex-direction: column; gap: 4px;
-  }
-  .badge {
-    font-size: 9px; font-weight: 700; letter-spacing: 1px;
-    padding: 2px 7px; border-radius: 4px;
-    text-transform: uppercase;
-  }
-  .badge-quality { background: var(--accent); color: #fff; }
-  .badge-ep { background: rgba(0,0,0,.75); color: var(--gold); border: 1px solid rgba(245,197,24,.3); }
-  .badge-new { background: #16a34a; color: #fff; }
-  .card-info { padding: 10px; }
-  .card-title {
-    font-size: 13px; font-weight: 600; color: var(--text);
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    margin-bottom: 3px;
-  }
-  .card-sub {
-    font-size: 11px; color: var(--muted);
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
+/* server tabs */
+.server-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 10px}
+.stab{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:5px 14px;border-radius:6px;font-size:12px;font-weight:500;transition:all .15s}
+.stab:hover{color:var(--text);border-color:var(--muted)}
+.stab.act{background:rgba(232,23,58,.15);border-color:var(--accent);color:var(--accent)}
 
-  /* ── PAGINATION ── */
-  .pagination {
-    display: flex; justify-content: center; gap: 6px;
-    margin-top: 28px; flex-wrap: wrap;
-  }
-  .page-btn {
-    background: var(--card); border: 1px solid var(--border);
-    color: var(--muted); width: 36px; height: 36px; border-radius: 8px;
-    font-family: var(--font-body); font-size: 13px; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: all .2s;
-  }
-  .page-btn:hover { color: var(--text); border-color: var(--muted); }
-  .page-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .page-btn:disabled { opacity: .4; cursor: not-allowed; }
+/* episode list */
+.ep-scroll{display:flex;gap:6px;flex-wrap:wrap;max-height:200px;overflow-y:auto;padding-right:4px}
+.ep-btn{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:6px 4px;border-radius:5px;font-size:11px;font-weight:600;min-width:50px;text-align:center;transition:all .15s}
+.ep-btn:hover{color:var(--text);border-color:var(--muted)}
+.ep-btn.act{background:var(--accent);border-color:var(--accent);color:#fff}
 
-  /* ── DROPDOWN MENUS ── */
-  .nav-dropdown { position: relative; }
-  .dropdown-menu {
-    position: absolute; top: calc(100% + 12px); left: 0;
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 8px;
-    min-width: 200px; z-index: 200;
-    display: none; box-shadow: 0 20px 60px rgba(0,0,0,.6);
-  }
-  .nav-dropdown.open .dropdown-menu { display: block; }
-  .dropdown-menu a {
-    display: block; padding: 8px 14px; border-radius: 6px;
-    color: var(--muted); font-size: 13px; text-decoration: none;
-    cursor: pointer; transition: color .15s, background .15s;
-  }
-  .dropdown-menu a:hover { color: var(--text); background: var(--card); }
-  .dropdown-menu .dm-title {
-    font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px;
-    color: var(--accent); font-weight: 700; padding: 4px 14px 8px;
-    border-bottom: 1px solid var(--border); margin-bottom: 4px;
-  }
-  .dropdown-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; min-width: 280px; }
+/* watch info */
+.watch-title{font-family:var(--fh);font-size:22px;font-weight:700;margin:14px 0 4px;line-height:1.2}
+.watch-orig{color:var(--muted);font-size:13px;margin-bottom:10px}
+.watch-meta{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-bottom:12px;align-items:center}
+.watch-desc{font-size:13px;color:#9a9ab8;line-height:1.8;margin-bottom:16px}
+.watch-cast{font-size:12px;color:var(--muted);line-height:1.8}
+.watch-cast span{color:var(--text)}
 
-  /* ── MODAL / DETAIL ── */
-  .modal-overlay {
-    position: fixed; inset: 0; z-index: 300;
-    background: rgba(0,0,0,.8); backdrop-filter: blur(6px);
-    display: flex; align-items: center; justify-content: center;
-    padding: 20px; opacity: 0; pointer-events: none; transition: opacity .25s;
-  }
-  .modal-overlay.open { opacity: 1; pointer-events: all; }
-  .modal {
-    background: var(--surface); border-radius: 16px;
-    width: 100%; max-width: 900px; max-height: 90vh;
-    overflow-y: auto; position: relative;
-    transform: translateY(20px); transition: transform .25s;
-  }
-  .modal-overlay.open .modal { transform: translateY(0); }
-  .modal-close {
-    position: absolute; top: 16px; right: 16px; z-index: 1;
-    background: rgba(0,0,0,.6); border: none; color: var(--text);
-    width: 34px; height: 34px; border-radius: 50%; font-size: 18px;
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-  }
-  .modal-hero {
-    position: relative; aspect-ratio: 16/7; overflow: hidden;
-    background: var(--card);
-  }
-  .modal-hero img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .modal-hero-grad {
-    position: absolute; bottom: 0; left: 0; right: 0; height: 60%;
-    background: linear-gradient(transparent, var(--surface));
-  }
-  .modal-body { padding: 20px 28px 28px; }
-  .modal-title {
-    font-family: var(--font-head);
-    font-size: 28px; font-weight: 700; line-height: 1.2;
-    margin-bottom: 6px;
-  }
-  .modal-orig { color: var(--muted); font-size: 14px; margin-bottom: 12px; }
-  .modal-meta {
-    display: flex; gap: 16px; flex-wrap: wrap;
-    margin-bottom: 16px; font-size: 13px; color: var(--muted);
-    align-items: center;
-  }
-  .meta-tag {
-    background: var(--card); border: 1px solid var(--border);
-    padding: 3px 10px; border-radius: 4px; font-size: 12px;
-  }
-  .modal-desc {
-    font-size: 13px; color: #b0b0c8; line-height: 1.8;
-    margin-bottom: 20px;
-  }
-  .modal-section-title {
-    font-size: 12px; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 1px; color: var(--muted); margin-bottom: 12px;
-  }
-  .ep-grid {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
-    gap: 8px; max-height: 200px; overflow-y: auto;
-  }
-  .ep-btn {
-    background: var(--card); border: 1px solid var(--border);
-    color: var(--text); font-family: var(--font-body); font-size: 12px;
-    padding: 8px 4px; border-radius: 6px; cursor: pointer;
-    text-align: center; transition: all .15s;
-  }
-  .ep-btn:hover, .ep-btn.active {
-    background: var(--accent); border-color: var(--accent); color: #fff;
-  }
+/* sidebar */
+.watch-side{}
+.side-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:10px}
+.side-list{display:flex;flex-direction:column;gap:10px}
+.side-card{display:grid;grid-template-columns:64px 1fr;gap:8px;cursor:pointer;border-radius:6px;padding:6px;transition:background .15s}
+.side-card:hover{background:var(--card)}
+.side-thumb{border-radius:4px;overflow:hidden;aspect-ratio:2/3;background:var(--surface)}
+.side-thumb img{width:100%;height:100%;object-fit:cover}
+.side-info{display:flex;flex-direction:column;justify-content:center;gap:2px;min-width:0}
+.side-name{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.side-sub{font-size:11px;color:var(--muted)}
 
-  /* ── VIDEO PLAYER ── */
-  .video-section { margin-bottom: 40px; }
-  .video-wrap {
-    background: #000; border-radius: 12px;
-    overflow: hidden; aspect-ratio: 16/9;
-    position: relative;
-  }
-  #videoPlayer {
-    width: 100%; height: 100%; display: block;
-    background: #000;
-  }
-  .video-title-bar {
-    padding: 14px 0 8px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .video-title-bar h2 {
-    font-family: var(--font-head); font-size: 18px; font-weight: 600;
-  }
-  .btn-back {
-    background: var(--card); border: 1px solid var(--border);
-    color: var(--muted); padding: 6px 16px; border-radius: 8px;
-    font-family: var(--font-body); font-size: 13px; cursor: pointer;
-    transition: color .2s;
-  }
-  .btn-back:hover { color: var(--text); }
+/* ── DETAIL PAGE ── */
+.detail-layout{padding-top:20px}
+.detail-hero{
+  position:relative;border-radius:12px;overflow:hidden;
+  height:min(42vw,320px);background:var(--card);margin-bottom:0
+}
+.detail-hero img{width:100%;height:100%;object-fit:cover}
+.detail-hero-grad{position:absolute;inset:0;background:linear-gradient(0deg,var(--bg) 0%,rgba(10,10,15,.4) 60%,transparent 100%)}
+.detail-body{display:grid;grid-template-columns:200px 1fr;gap:24px;margin-top:-80px;position:relative;z-index:1;padding:0 4px}
+@media(max-width:600px){.detail-body{grid-template-columns:1fr;margin-top:0}}
+.detail-poster{border-radius:var(--r);overflow:hidden;aspect-ratio:2/3;border:3px solid var(--border);flex-shrink:0;background:var(--surface)}
+.detail-poster img{width:100%;height:100%;object-fit:cover}
+.detail-info{padding-top:88px}
+@media(max-width:600px){.detail-info{padding-top:0}}
+.detail-title{font-family:var(--fh);font-size:clamp(18px,3vw,32px);font-weight:700;line-height:1.2;margin-bottom:4px}
+.detail-orig{color:var(--muted);font-size:13px;margin-bottom:12px}
+.detail-meta{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-bottom:14px;align-items:center}
+.detail-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.dtag{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:3px 10px;font-size:11px;cursor:pointer;transition:border-color .15s,color .15s}
+.dtag:hover{border-color:var(--accent);color:var(--accent)}
+.detail-desc{font-size:13px;color:#9a9ab8;line-height:1.8;margin-bottom:20px}
+.detail-eps{margin-top:24px}
+.det-sub{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:10px}
 
-  /* ── LOADING ── */
-  .skeleton {
-    background: linear-gradient(90deg, var(--card) 25%, var(--border) 50%, var(--card) 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.4s infinite;
-    border-radius: var(--radius);
-  }
-  @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-  .skeleton-card { aspect-ratio: 2/3; }
-  .spinner {
-    width: 40px; height: 40px; border: 3px solid var(--border);
-    border-top-color: var(--accent); border-radius: 50%;
-    animation: spin .8s linear infinite; margin: 60px auto;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .error-box {
-    text-align: center; padding: 60px 20px;
-    color: var(--muted);
-  }
-  .error-box .err-icon { font-size: 40px; margin-bottom: 14px; }
-  .error-box p { font-size: 14px; margin-bottom: 16px; }
-  .retry-btn {
-    background: var(--accent); color: #fff; border: none;
-    padding: 8px 20px; border-radius: 8px; cursor: pointer;
-    font-family: var(--font-body); font-size: 13px;
-  }
+/* ── MISC ── */
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .75s linear infinite;margin:60px auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:60px 0;color:var(--muted)}
+.empty .ei{font-size:36px;margin-bottom:12px}
+.empty p{font-size:13px}
 
-  /* ── TOAST ── */
-  #toast {
-    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-    background: var(--card); border: 1px solid var(--border);
-    color: var(--text); padding: 10px 20px; border-radius: 8px;
-    font-size: 13px; z-index: 999; opacity: 0;
-    transition: opacity .3s; pointer-events: none;
-    white-space: nowrap;
-  }
-  #toast.show { opacity: 1; }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 600px) {
-    nav { padding: 0 12px; }
-    #app { padding: 0 12px 40px; }
-    .hero-overlay { padding: 20px 20px; }
-    .hero-desc { display: none; }
-    .movie-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; }
-    .nav-links { display: none; }
-    .modal-body { padding: 16px; }
-  }
+@media(max-width:600px){
+  #nav{padding:0 12px}
+  #app{padding:0 10px 40px}
+  .hero{height:54vw}
+  .hero-body{padding:16px 18px}
+  .hero-desc{display:none}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+  .nav-menu{display:none}
+}
 </style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav>
-  <div class="logo" onclick="navigateTo('home')">PHIM<span>HAY</span></div>
+<nav id="nav">
+  <div class="logo" onclick="go('home')">PHIM<em>HAY</em></div>
 
-  <div class="search-wrap">
-    <span class="search-icon">🔍</span>
-    <input type="text" id="searchInput" placeholder="Tìm phim, diễn viên..." 
-           onkeydown="if(event.key==='Enter') doSearch()">
-    <button class="search-btn" onclick="doSearch()">Tìm</button>
+  <div class="search-box">
+    <span class="si">🔍</span>
+    <input id="si" type="text" placeholder="Tìm phim, diễn viên..." onkeydown="if(event.key==='Enter')doSearch()">
+    <button class="sb" onclick="doSearch()">Tìm</button>
   </div>
 
-  <div class="nav-links">
-    <button class="nav-btn" onclick="navigateTo('home')" id="btn-home">Trang chủ</button>
-    <button class="nav-btn" onclick="navigateTo('list','phim-bo')" id="btn-phim-bo">Phim Bộ</button>
-    <button class="nav-btn" onclick="navigateTo('list','phim-le')" id="btn-phim-le">Phim Lẻ</button>
-    <button class="nav-btn" onclick="navigateTo('list','hoat-hinh')" id="btn-hoat-hinh">Hoạt Hình</button>
-    <div class="nav-dropdown" id="theloaiDrop">
-      <button class="nav-btn" onclick="toggleDrop('theloaiDrop')">Thể Loại ▾</button>
-      <div class="dropdown-menu" id="theloaiMenu"><div class="dm-title">Thể Loại</div><div class="dropdown-cols" id="theloaiList"></div></div>
+  <nav class="nav-menu">
+    <button class="nm-btn" id="nb-home" onclick="go('home')">Trang chủ</button>
+    <button class="nm-btn" id="nb-phim-bo" onclick="go('list','phim-bo')">Phim Bộ</button>
+    <button class="nm-btn" id="nb-phim-le" onclick="go('list','phim-le')">Phim Lẻ</button>
+    <button class="nm-btn" id="nb-hoat-hinh" onclick="go('list','hoat-hinh')">Hoạt Hình</button>
+    <button class="nm-btn" id="nb-tv-shows" onclick="go('list','tv-shows')">TV Shows</button>
+
+    <div class="dd" id="ddTL">
+      <button class="nm-btn" onclick="toggleDD('ddTL')">Thể Loại ▾</button>
+      <div class="dd-menu">
+        <div class="dd-menu-inner" id="tlList"><div class="dd-lbl" style="grid-column:span 2">Thể Loại</div></div>
+      </div>
     </div>
-    <div class="nav-dropdown" id="quocgiaDrop">
-      <button class="nav-btn" onclick="toggleDrop('quocgiaDrop')">Quốc Gia ▾</button>
-      <div class="dropdown-menu" id="quocgiaMenu"><div class="dm-title">Quốc Gia</div><div class="dropdown-cols" id="quocgiaList"></div></div>
+
+    <div class="dd" id="ddQG">
+      <button class="nm-btn" onclick="toggleDD('ddQG')">Quốc Gia ▾</button>
+      <div class="dd-menu">
+        <div class="dd-menu-inner" id="qgList"><div class="dd-lbl" style="grid-column:span 2">Quốc Gia</div></div>
+      </div>
     </div>
-    <button class="nav-btn" onclick="navigateTo('list','tv-shows')" id="btn-tv-shows">TV Shows</button>
-  </div>
+  </nav>
 </nav>
 
 <div id="app"><div class="spinner"></div></div>
-<div id="toast"></div>
 
-<!-- MODAL DETAIL -->
-<div class="modal-overlay" id="detailModal">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal()">✕</button>
-    <div id="modalContent"></div>
-  </div>
-</div>
+<!-- Vidstack -->
+<script type="module" src="https://cdn.vidstack.io/player"></script>
 
 <script>
 const API = 'https://phimapi.com';
-let state = { view: 'home', slug: null, page: 1, keyword: '', theloai: null, quocgia: null };
-let currentMovie = null;
-let currentEpSlug = null;
+// ── STATE ──
+// URL-based routing via hash: #home | #list/phim-bo | #genre/hanh-dong | #country/han-quoc | #movie/slug | #watch/slug/serverIdx/epIdx
+let S = { view:'home', slug:'', serverIdx:0, epIdx:0, page:1, kw:'' };
+let movieCache = {}; // slug -> data
 
-// ── HELPERS ──
-function img(path) {
-  if (!path) return 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="160" height="240"%3E%3Crect fill="%231a1a26" width="160" height="240"/%3E%3Ctext x="80" y="120" text-anchor="middle" fill="%237a7a9a" font-size="32"%3E🎬%3C/text%3E%3C/svg%3E';
-  if (path.startsWith('http')) return path;
-  return `https://phimimg.com/${path}`;
+// ── HASH ROUTER ──
+function hashToState(hash) {
+  const parts = (hash.replace('#','')||'home').split('/');
+  const view = parts[0] || 'home';
+  return {
+    view,
+    slug: parts[1] || '',
+    serverIdx: parseInt(parts[2]||'0')||0,
+    epIdx: parseInt(parts[3]||'0')||0,
+    page: 1, kw: ''
+  };
 }
-
-function toast(msg, dur=2500) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), dur);
+function stateToHash(s) {
+  if (s.view === 'home') return '#home';
+  if (s.view === 'list') return `#list/${s.slug}`;
+  if (s.view === 'genre') return `#genre/${s.slug}`;
+  if (s.view === 'country') return `#country/${s.slug}`;
+  if (s.view === 'search') return `#search/${encodeURIComponent(s.kw)}`;
+  if (s.view === 'movie') return `#movie/${s.slug}`;
+  if (s.view === 'watch') return `#watch/${s.slug}/${s.serverIdx}/${s.epIdx}`;
+  return '#home';
 }
-
-async function apiFetch(url) {
-  try {
-    const r = await fetch(url);
-    if (!r.ok) throw new Error(r.status);
-    return await r.json();
-  } catch (e) {
-    console.error(e); return null;
+function pushState(s, p=1) {
+  s.page = p;
+  S = s;
+  const hash = stateToHash(s);
+  if (location.hash !== hash) {
+    history.pushState(null, '', hash);
   }
+  render();
 }
-
-function skeletonGrid(n=12) {
-  return `<div class="movie-grid">${Array(n).fill('<div class="skeleton skeleton-card"></div>').join('')}</div>`;
-}
-
-function setActiveNav(id) {
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  const el = document.getElementById(id);
-  if (el) el.classList.add('active');
-}
-
-// ── DROPDOWNS ──
-function toggleDrop(id) {
-  const el = document.getElementById(id);
-  const wasOpen = el.classList.contains('open');
-  document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
-  if (!wasOpen) el.classList.add('open');
-}
-document.addEventListener('click', e => {
-  if (!e.target.closest('.nav-dropdown')) {
-    document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
-  }
+window.addEventListener('popstate', () => {
+  const s = hashToState(location.hash);
+  // restore kw from hash for search
+  if (s.view === 'search') s.kw = decodeURIComponent(s.slug);
+  S = s; render();
 });
 
+// ── HELPERS ──
+function go(view, slug='', serverIdx=0, epIdx=0, page=1) {
+  pushState({view, slug, serverIdx, epIdx, page, kw: S.kw});
+}
+function goPage(p) {
+  S.page = p;
+  history.pushState(null,'',stateToHash(S));
+  window.scrollTo({top:0,behavior:'smooth'});
+  render();
+}
+function doSearch() {
+  const kw = document.getElementById('si').value.trim();
+  if (!kw) return;
+  pushState({view:'search', slug: kw, serverIdx:0, epIdx:0, page:1, kw});
+}
+function toggleDD(id) {
+  const el = document.getElementById(id);
+  const was = el.classList.contains('open');
+  document.querySelectorAll('.dd').forEach(d=>d.classList.remove('open'));
+  if (!was) el.classList.add('open');
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('.dd')) document.querySelectorAll('.dd').forEach(d=>d.classList.remove('open'));
+});
+function setNav(id) {
+  document.querySelectorAll('.nm-btn').forEach(b=>b.classList.remove('act'));
+  const el = document.getElementById(id);
+  if (el) el.classList.add('act');
+}
+
+async function api(url) {
+  try { const r = await fetch(url); if (!r.ok) throw 0; return await r.json(); }
+  catch { return null; }
+}
+
+function imgUrl(p) {
+  if (!p) return '';
+  return p.startsWith('http') ? p : `https://phimimg.com/${p}`;
+}
+function fallbackImg(e) {
+  e.target.style.display='none';
+}
+
+// ── INIT MENUS ──
 async function loadMenus() {
   const [tl, qg] = await Promise.all([
-    apiFetch(`${API}/the-loai`),
-    apiFetch(`${API}/quoc-gia`)
+    api(`${API}/the-loai`),
+    api(`${API}/quoc-gia`)
   ]);
   if (tl?.data) {
-    const el = document.getElementById('theloaiList');
-    el.innerHTML = tl.data.map(g =>
-      `<a onclick="navigateTo('genre','${g.slug}')">${g.name}</a>`
-    ).join('');
+    const el = document.getElementById('tlList');
+    el.innerHTML = `<div class="dd-lbl" style="grid-column:span 2">Thể Loại</div>` +
+      tl.data.map(g=>`<div class="dd-item" onclick="go('genre','${g.slug}')">${g.name}</div>`).join('');
   }
   if (qg?.data) {
-    const el = document.getElementById('quocgiaList');
-    el.innerHTML = qg.data.map(c =>
-      `<a onclick="navigateTo('country','${c.slug}')">${c.name}</a>`
-    ).join('');
+    const el = document.getElementById('qgList');
+    el.innerHTML = `<div class="dd-lbl" style="grid-column:span 2">Quốc Gia</div>` +
+      qg.data.map(c=>`<div class="dd-item" onclick="go('country','${c.slug}')">${c.name}</div>`).join('');
   }
-}
-
-// ── NAVIGATE ──
-function navigateTo(view, slug='', page=1) {
-  state = { view, slug, page, keyword: state.keyword };
-  document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
-  render();
-}
-
-function doSearch() {
-  const kw = document.getElementById('searchInput').value.trim();
-  if (!kw) return;
-  state = { view: 'search', slug: '', page: 1, keyword: kw };
-  render();
 }
 
 // ── RENDER ROUTER ──
 async function render() {
   const app = document.getElementById('app');
-  app.innerHTML = `<div class="spinner"></div>`;
-
-  switch (state.view) {
-    case 'home':    setActiveNav('btn-home');    await renderHome(); break;
-    case 'list':    await renderList(); break;
-    case 'genre':   await renderGenre(); break;
-    case 'country': await renderCountry(); break;
-    case 'search':  await renderSearch(); break;
-    case 'watch':   await renderWatch(); break;
+  app.innerHTML = '<div class="spinner"></div>';
+  document.querySelectorAll('.dd').forEach(d=>d.classList.remove('open'));
+  switch(S.view) {
+    case 'home':    setNav('nb-home');    await renderHome(); break;
+    case 'list':    setNav('nb-'+S.slug); await renderList(); break;
+    case 'genre':   setNav('');           await renderGenre(); break;
+    case 'country': setNav('');           await renderCountry(); break;
+    case 'search':  setNav('');           await renderSearch(); break;
+    case 'movie':   setNav('');           await renderMovie(); break;
+    case 'watch':   setNav('');           await renderWatch(); break;
   }
 }
 
 // ── HOME ──
 async function renderHome() {
-  setActiveNav('btn-home');
-  const app = document.getElementById('app');
-
-  // Load new movies + phim bo + phim le in parallel
-  const [newMovies, phimBo, phimLe, phimHoatHinh] = await Promise.all([
-    apiFetch(`${API}/danh-sach/phim-moi-cap-nhat-v3?page=1`),
-    apiFetch(`${API}/v1/api/danh-sach/phim-bo?page=1`),
-    apiFetch(`${API}/v1/api/danh-sach/phim-le?page=1`),
-    apiFetch(`${API}/v1/api/danh-sach/hoat-hinh?page=1`),
+  const [newest, bo, le, anime] = await Promise.all([
+    api(`${API}/danh-sach/phim-moi-cap-nhat-v3?page=1`),
+    api(`${API}/v1/api/danh-sach/phim-bo?page=1`),
+    api(`${API}/v1/api/danh-sach/phim-le?page=1`),
+    api(`${API}/v1/api/danh-sach/hoat-hinh?page=1`),
   ]);
-
-  const newItems = newMovies?.items || [];
+  const newItems = newest?.items || [];
   const hero = newItems[0];
-  const featured = newItems.slice(1, 7);
-  const bos = phimBo?.data?.items || [];
-  const les = phimLe?.data?.items || [];
-  const hans = phimHoatHinh?.data?.items || [];
-
+  const app = document.getElementById('app');
   app.innerHTML = `
     ${hero ? heroHtml(hero) : ''}
-    ${sectionHtml('🔥 Mới Cập Nhật', newItems.slice(1,13), 'list','phim-moi')}
-    ${sectionHtml('📺 Phim Bộ', bos.slice(0,12), 'list','phim-bo')}
-    ${sectionHtml('🎬 Phim Lẻ', les.slice(0,12), 'list','phim-le')}
-    ${sectionHtml('🎌 Hoạt Hình', hans.slice(0,12), 'list','hoat-hinh')}
+    ${secHtml('🔥 Mới Cập Nhật', newItems.slice(1,13), 'list','phim-moi')}
+    ${secHtml('📺 Phim Bộ', bo?.data?.items?.slice(0,12)||[], 'list','phim-bo')}
+    ${secHtml('🎬 Phim Lẻ', le?.data?.items?.slice(0,12)||[], 'list','phim-le')}
+    ${secHtml('🎌 Hoạt Hình', anime?.data?.items?.slice(0,12)||[], 'list','hoat-hinh')}
   `;
 }
 
 function heroHtml(m) {
-  const thumb = m.thumb_url || m.poster_url || '';
-  const name = m.name || m.origin_name || 'Không rõ';
-  const year = m.year || '';
-  const ep = m.episode_current || '';
+  const t = imgUrl(m.thumb_url||m.poster_url);
   return `
-    <div class="hero" onclick="openDetail('${m.slug}')">
-      <img class="hero-img" src="${img(thumb)}" alt="${name}" onerror="this.src='https://via.placeholder.com/1280x540/0a0a0f/333?text=PhimHay'">
-      <div class="hero-overlay">
-        <div class="hero-info">
-          <span class="hero-badge">Nổi bật</span>
-          <div class="hero-title">${name}</div>
-          <div class="hero-meta">
-            <span class="star">★</span>
-            <span>${year}</span>
-            ${ep ? `<span>${ep}</span>` : ''}
-            <span class="meta-tag">HD</span>
-          </div>
-          <div class="hero-desc">${m.origin_name || ''}</div>
-          <div class="hero-actions">
-            <button class="btn-play" onclick="event.stopPropagation();openDetail('${m.slug}')">▶ Xem Ngay</button>
-            <button class="btn-info" onclick="event.stopPropagation();openDetail('${m.slug}')">Thông Tin</button>
-          </div>
+  <div class="hero" onclick="go('movie','${m.slug}')">
+    <img class="hero-img" src="${t}" alt="${m.name}" onerror="fallbackImg(event)">
+    <div class="hero-grad"></div>
+    <div class="hero-body">
+      <div class="hero-inner">
+        <span class="hero-badge">Nổi Bật</span>
+        <div class="hero-title">${m.name}</div>
+        <div class="hero-orig">${m.origin_name||''}</div>
+        <div class="hero-meta">
+          <span class="star">★</span>
+          <span>${m.year||''}</span>
+          ${m.episode_current?`<span>${m.episode_current}</span>`:''}
+          <span class="mtag">${m.quality||'HD'}</span>
+        </div>
+        <div class="hero-btns">
+          <button class="btn-play" onclick="event.stopPropagation();go('movie','${m.slug}')">▶ Xem Ngay</button>
+          <button class="btn-more" onclick="event.stopPropagation();go('movie','${m.slug}')">Chi tiết</button>
         </div>
       </div>
-    </div>`;
+    </div>
+  </div>`;
 }
 
-function sectionHtml(title, items, nav, slug, hideAll=false) {
+function secHtml(title, items, nav, slug) {
   if (!items.length) return '';
-  const seeAll = hideAll ? '' : `<button class="see-all" onclick="navigateTo('${nav}','${slug}')">Xem tất cả →</button>`;
-  return `
-    <div class="section">
-      <div class="section-head">
-        <div class="section-title">${title}</div>
-        ${seeAll}
-      </div>
-      ${gridHtml(items)}
-    </div>`;
-}
-
-function gridHtml(items) {
-  return `<div class="movie-grid">${items.map(cardHtml).join('')}</div>`;
+  return `<div class="sec">
+    <div class="sec-head">
+      <div class="sec-title">${title}</div>
+      <button class="see-all" onclick="go('${nav}','${slug}')">Xem tất cả →</button>
+    </div>
+    <div class="grid">${items.map(cardHtml).join('')}</div>
+  </div>`;
 }
 
 function cardHtml(m) {
-  const slug = m.slug || '';
-  const name = m.name || m.title || 'Không rõ';
-  const origName = m.origin_name || '';
-  const thumb = m.thumb_url || m.poster_url || '';
-  const year = m.year || '';
-  const ep = m.episode_current || m.time || '';
-  const quality = m.quality || 'HD';
-  return `
-    <div class="movie-card" onclick="openDetail('${slug}')">
-      <div class="poster-wrap">
-        <img src="${img(thumb)}" alt="${name}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22160%22 height=%22240%22%3E%3Crect fill=%22%231a1a26%22 width=%22160%22 height=%22240%22/%3E%3C/svg%3E'">
-        <div class="card-overlay"><div class="play-icon">▶</div></div>
-        <div class="card-badges">
-          <span class="badge badge-quality">${quality}</span>
-          ${ep ? `<span class="badge badge-ep">${ep}</span>` : ''}
-        </div>
+  const t = imgUrl(m.thumb_url||m.poster_url);
+  return `<div class="card" onclick="go('movie','${m.slug}')">
+    <div class="cover">
+      <img src="${t}" alt="${m.name}" loading="lazy" onerror="fallbackImg(event)">
+      <div class="cov-ov"><div class="play-circle">▶</div></div>
+      <div class="cbadges">
+        <span class="cbadge bq">${m.quality||'HD'}</span>
+        ${m.episode_current?`<span class="cbadge be">${m.episode_current}</span>`:''}
       </div>
-      <div class="card-info">
-        <div class="card-title">${name}</div>
-        <div class="card-sub">${origName || year}</div>
-      </div>
-    </div>`;
+    </div>
+    <div class="cinfo">
+      <div class="ctitle">${m.name}</div>
+      <div class="csub">${m.origin_name||m.year||''}</div>
+    </div>
+  </div>`;
 }
 
 // ── LIST PAGE ──
-const TYPE_NAMES = {
+const TYPES = {
   'phim-bo':'Phim Bộ','phim-le':'Phim Lẻ','tv-shows':'TV Shows',
   'hoat-hinh':'Hoạt Hình','phim-vietsub':'Vietsub','phim-thuyet-minh':'Thuyết Minh',
   'phim-long-tieng':'Lồng Tiếng','phim-moi':'Mới Cập Nhật'
@@ -717,311 +469,312 @@ const TYPE_NAMES = {
 const TYPE_LIST = ['phim-bo','phim-le','tv-shows','hoat-hinh','phim-vietsub','phim-thuyet-minh','phim-long-tieng'];
 
 async function renderList() {
-  const app = document.getElementById('app');
-  const typeId = 'btn-' + state.slug;
-  setActiveNav(typeId);
-
-  let url, data;
-  if (state.slug === 'phim-moi') {
-    url = `${API}/danh-sach/phim-moi-cap-nhat-v3?page=${state.page}`;
-    data = await apiFetch(url);
-    const items = data?.items || [];
-    const total = Math.ceil((data?.pagination?.totalItems || items.length * 5) / (data?.pagination?.totalItemsPerPage || 24));
-    renderListPage('Mới Cập Nhật', items, total);
+  let items=[], total=0, titleName = TYPES[S.slug]||S.slug;
+  if (S.slug === 'phim-moi') {
+    const d = await api(`${API}/danh-sach/phim-moi-cap-nhat-v3?page=${S.page}`);
+    items = d?.items||[];
+    total = Math.ceil((d?.pagination?.totalItems||items.length*5)/(d?.pagination?.totalItemsPerPage||24));
   } else {
-    url = `${API}/v1/api/danh-sach/${state.slug}?page=${state.page}`;
-    data = await apiFetch(url);
-    const items = data?.data?.items || [];
-    const params = data?.data?.params?.pagination || {};
-    const total = Math.ceil((params.totalItems||0) / (params.totalItemsPerPage||24));
-    renderListPage(TYPE_NAMES[state.slug] || state.slug, items, total);
+    const d = await api(`${API}/v1/api/danh-sach/${S.slug}?page=${S.page}`);
+    items = d?.data?.items||[];
+    const p = d?.data?.params?.pagination||{};
+    total = Math.ceil((p.totalItems||0)/(p.totalItemsPerPage||24));
+    const seo = d?.data?.seoOnPage?.titleHead;
+    if (seo) titleName = seo;
   }
+  renderGridPage(titleName, items, total, TYPE_LIST.map(t=>[t,TYPES[t]]), 'list', S.slug);
 }
 
-function renderListPage(title, items, totalPages) {
-  const app = document.getElementById('app');
-  const chips = TYPE_LIST.map(t =>
-    `<span class="chip ${t===state.slug?'active':''}" onclick="navigateTo('list','${t}')">${TYPE_NAMES[t]}</span>`
-  ).join('');
-
-  if (!items.length) {
-    app.innerHTML = `<div class="error-box"><div class="err-icon">😔</div><p>Không có phim nào.</p></div>`;
-    return;
-  }
-
-  app.innerHTML = `
-    <div style="padding-top:24px">
-      <div class="chip-row">${chips}</div>
-      <div class="section-head">
-        <div class="section-title">${title}</div>
-        <span style="color:var(--muted);font-size:12px">Trang ${state.page}</span>
-      </div>
-      ${gridHtml(items)}
-      ${paginationHtml(state.page, totalPages || 10)}
-    </div>`;
-}
-
-// ── GENRE ──
 async function renderGenre() {
-  const app = document.getElementById('app');
-  const url = `${API}/v1/api/the-loai/${state.slug}?page=${state.page}`;
-  const data = await apiFetch(url);
-  const items = data?.data?.items || [];
-  const seoName = data?.data?.seoOnPage?.titleHead || state.slug;
-  const params = data?.data?.params?.pagination || {};
-  const total = Math.ceil((params.totalItems||0)/(params.totalItemsPerPage||24));
-
-  if (!items.length) {
-    app.innerHTML = `<div class="error-box"><div class="err-icon">😔</div><p>Không có phim nào.</p></div>`;
-    return;
-  }
-  app.innerHTML = `
-    <div style="padding-top:24px">
-      <div class="section-head">
-        <div class="section-title">Thể Loại: ${seoName}</div>
-        <span style="color:var(--muted);font-size:12px">Trang ${state.page}</span>
-      </div>
-      ${gridHtml(items)}
-      ${paginationHtml(state.page, total || 10)}
-    </div>`;
+  const d = await api(`${API}/v1/api/the-loai/${S.slug}?page=${S.page}`);
+  const items = d?.data?.items||[];
+  const p = d?.data?.params?.pagination||{};
+  const total = Math.ceil((p.totalItems||0)/(p.totalItemsPerPage||24));
+  const name = d?.data?.seoOnPage?.titleHead || S.slug;
+  renderGridPage(`Thể Loại: ${name}`, items, total);
 }
 
-// ── COUNTRY ──
 async function renderCountry() {
-  const app = document.getElementById('app');
-  const url = `${API}/v1/api/quoc-gia/${state.slug}?page=${state.page}`;
-  const data = await apiFetch(url);
-  const items = data?.data?.items || [];
-  const seoName = data?.data?.seoOnPage?.titleHead || state.slug;
-  const params = data?.data?.params?.pagination || {};
-  const total = Math.ceil((params.totalItems||0)/(params.totalItemsPerPage||24));
-
-  if (!items.length) {
-    app.innerHTML = `<div class="error-box"><div class="err-icon">😔</div><p>Không có phim nào.</p></div>`;
-    return;
-  }
-  app.innerHTML = `
-    <div style="padding-top:24px">
-      <div class="section-head">
-        <div class="section-title">Quốc Gia: ${seoName}</div>
-        <span style="color:var(--muted);font-size:12px">Trang ${state.page}</span>
-      </div>
-      ${gridHtml(items)}
-      ${paginationHtml(state.page, total || 10)}
-    </div>`;
+  const d = await api(`${API}/v1/api/quoc-gia/${S.slug}?page=${S.page}`);
+  const items = d?.data?.items||[];
+  const p = d?.data?.params?.pagination||{};
+  const total = Math.ceil((p.totalItems||0)/(p.totalItemsPerPage||24));
+  const name = d?.data?.seoOnPage?.titleHead || S.slug;
+  renderGridPage(`Quốc Gia: ${name}`, items, total);
 }
 
-// ── SEARCH ──
 async function renderSearch() {
-  const app = document.getElementById('app');
-  const url = `${API}/v1/api/tim-kiem?keyword=${encodeURIComponent(state.keyword)}&page=${state.page}`;
-  const data = await apiFetch(url);
-  const items = data?.data?.items || [];
-  const params = data?.data?.params?.pagination || {};
-  const total = Math.ceil((params.totalItems||0)/(params.totalItemsPerPage||24));
+  const d = await api(`${API}/v1/api/tim-kiem?keyword=${encodeURIComponent(S.kw)}&page=${S.page}`);
+  const items = d?.data?.items||[];
+  const p = d?.data?.params?.pagination||{};
+  const total = Math.ceil((p.totalItems||0)/(p.totalItemsPerPage||24));
+  renderGridPage(`🔍 Kết quả: "${S.kw}"`, items, total, null, '', '', `${p.totalItems||0} phim`);
+}
 
+function renderGridPage(title, items, total, chips, chipNav, chipAct, sub='') {
+  const app = document.getElementById('app');
   if (!items.length) {
-    app.innerHTML = `<div class="error-box"><div class="err-icon">🔍</div><p>Không tìm thấy kết quả cho "<strong>${state.keyword}</strong>"</p></div>`;
+    app.innerHTML = `<div class="empty"><div class="ei">😔</div><p>Không có phim nào.</p></div>`;
     return;
   }
+  const chipHtml = chips ? `<div class="chips">${chips.map(([s,n])=>`<span class="chip ${s===chipAct?'act':''}" onclick="go('${chipNav}','${s}')">${n}</span>`).join('')}</div>` : '';
   app.innerHTML = `
-    <div style="padding-top:24px">
-      <div class="section-head">
-        <div class="section-title">🔍 Kết quả: "${state.keyword}"</div>
-        <span style="color:var(--muted);font-size:12px">${params.totalItems||''} phim</span>
+    <div class="pg-head">
+      ${chipHtml}
+      <div class="sec-head">
+        <div class="sec-title">${title}</div>
+        <span style="color:var(--muted);font-size:12px">${sub||`Trang ${S.page}`}</span>
       </div>
-      ${gridHtml(items)}
-      ${paginationHtml(state.page, total || 5)}
+      <div class="grid">${items.map(cardHtml).join('')}</div>
+      ${pagesHtml(S.page, Math.min(total,50))}
     </div>`;
 }
 
-// ── DETAIL MODAL ──
-async function openDetail(slug) {
-  if (!slug) return;
-  const modal = document.getElementById('detailModal');
-  document.getElementById('modalContent').innerHTML = `<div class="spinner" style="padding:60px 0"></div>`;
-  modal.classList.add('open');
-  document.body.style.overflow = 'hidden';
-
-  const data = await apiFetch(`${API}/phim/${slug}`);
-  if (!data?.movie) {
-    document.getElementById('modalContent').innerHTML = `<div class="error-box"><div class="err-icon">⚠️</div><p>Không tải được thông tin phim.</p></div>`;
-    return;
-  }
-  currentMovie = data;
-  const m = data.movie;
-  const eps = data.episodes || [];
-
-  const thumb = m.thumb_url || m.poster_url || '';
-  const genres = (m.category || []).map(c => `<span class="meta-tag">${c.name}</span>`).join('');
-  const countries = (m.country || []).map(c => `<span class="meta-tag">${c.name}</span>`).join('');
-
-  // Build episode buttons
-  let epSection = '';
-  if (eps.length > 0) {
-    const server = eps[0];
-    const epBtns = (server.server_data || []).map((ep, i) =>
-      `<button class="ep-btn" onclick="watchEpisode('${slug}','${ep.slug}',${i})" id="epbtn-${i}">
-        ${ep.name}
-      </button>`
-    ).join('');
-    epSection = epBtns ? `
-      <div class="modal-section-title">TẬP PHIM (${server.server_data.length} tập)</div>
-      <div class="ep-grid">${epBtns}</div>
-      <div style="margin-top:16px">
-        <button class="btn-play" onclick="watchEpisode('${slug}','${server.server_data[0].slug}',0)">▶ Xem Tập Đầu</button>
-      </div>` : `<button class="btn-play" onclick="watchEpisode('${slug}','${(server.server_data[0]||{}).slug||''}',0)">▶ Xem Ngay</button>`;
-  }
-
-  document.getElementById('modalContent').innerHTML = `
-    <div class="modal-hero">
-      <img src="${img(thumb)}" alt="${m.name}" onerror="this.style.display='none'">
-      <div class="modal-hero-grad"></div>
-    </div>
-    <div class="modal-body">
-      <div class="modal-title">${m.name}</div>
-      <div class="modal-orig">${m.origin_name || ''}</div>
-      <div class="modal-meta">
-        <span class="star" style="color:var(--gold)">★ ${m.tmdb?.vote_average?.toFixed(1) || 'N/A'}</span>
-        <span>${m.year || ''}</span>
-        <span>${m.time || ''}</span>
-        <span>${m.quality || 'HD'}</span>
-        <span>${m.lang || ''}</span>
-        ${genres}
-        ${countries}
-      </div>
-      <p class="modal-desc">${(m.content||'Đang cập nhật nội dung...').replace(/<[^>]+>/g,'')}</p>
-      ${epSection}
-    </div>`;
-}
-
-function closeModal() {
-  document.getElementById('detailModal').classList.remove('open');
-  document.body.style.overflow = '';
-}
-document.getElementById('detailModal').addEventListener('click', e => {
-  if (e.target === e.currentTarget) closeModal();
-});
-
-// ── WATCH ──
-async function watchEpisode(movieSlug, epSlug, epIndex) {
-  closeModal();
-  state = { view: 'watch', slug: movieSlug, epSlug, epIndex, page: 1 };
-  await renderWatch(epSlug, epIndex);
-}
-
-async function renderWatch(epSlug, epIndex) {
+// ── DETAIL (MOVIE) PAGE ──
+async function renderMovie() {
   const app = document.getElementById('app');
-  app.innerHTML = `<div class="spinner"></div>`;
+  let data = movieCache[S.slug];
+  if (!data) {
+    data = await api(`${API}/phim/${S.slug}`);
+    if (data) movieCache[S.slug] = data;
+  }
+  if (!data?.movie) {
+    app.innerHTML = `<div class="empty"><div class="ei">⚠️</div><p>Không tải được thông tin phim.</p></div>`;
+    return;
+  }
+  const m = data.movie;
+  const eps = data.episodes||[];
+  document.title = `${m.name} – PhimHay`;
 
-  const slug = state.slug || epSlug;
-  if (!currentMovie || currentMovie.movie?.slug !== slug) {
-    const data = await apiFetch(`${API}/phim/${slug}`);
-    if (!data?.movie) {
-      app.innerHTML = `<div class="error-box"><div class="err-icon">⚠️</div><p>Không tải được phim.</p></div>`;
-      return;
-    }
-    currentMovie = data;
+  const thumb = imgUrl(m.thumb_url||m.poster_url);
+  const poster = imgUrl(m.poster_url||m.thumb_url);
+  const genres = (m.category||[]).map(c=>`<span class="dtag" onclick="go('genre','${c.slug}')">${c.name}</span>`).join('');
+  const countries = (m.country||[]).map(c=>`<span class="dtag" onclick="go('country','${c.slug}')">${c.name}</span>`).join('');
+  const rating = m.tmdb?.vote_average ? `<span class="star" style="color:var(--gold)">★ ${m.tmdb.vote_average.toFixed(1)}</span>` : '';
+  const actors = (m.actor||[]).slice(0,6).join(', ');
+
+  // build episode section – per server
+  let epSection = '';
+  if (eps.length) {
+    const serverBtns = eps.map((srv,si)=>
+      `<button class="stab act" id="dstab-${si}" onclick="selectDetailServer(${si})">${srv.server_name}</button>`
+    ).join('');
+    // show first server episodes
+    const firstEps = eps[0]?.server_data||[];
+    const epBtns = firstEps.map((ep,ei)=>
+      `<button class="ep-btn" onclick="go('watch','${m.slug}',0,${ei})">${ep.name}</button>`
+    ).join('');
+    epSection = `
+      <div class="detail-eps">
+        <div class="det-sub">Server</div>
+        <div class="server-tabs" id="dServerTabs">${serverBtns}</div>
+        <div class="det-sub">Tập Phim</div>
+        <div class="ep-scroll" id="dEpList">${epBtns}</div>
+        <div style="margin-top:14px">
+          <button class="btn-play" onclick="go('watch','${m.slug}',0,0)">▶ Xem Tập Đầu</button>
+        </div>
+      </div>`;
   }
 
-  const m = currentMovie.movie;
-  const eps = currentMovie.episodes || [];
-  const server = eps[0];
-  const allEps = server?.server_data || [];
-  const idx = state.epIndex ?? epIndex ?? 0;
-  const ep = allEps[idx] || allEps[0];
-  const videoUrl = ep?.link_m3u8 || ep?.link_embed || '';
-
-  const epBtns = allEps.map((e, i) =>
-    `<button class="ep-btn ${i===idx?'active':''}" 
-     onclick="switchEp(${i})">${e.name}</button>`
-  ).join('');
-
   app.innerHTML = `
-    <div class="video-section" style="padding-top:20px">
-      <div class="video-title-bar">
-        <button class="btn-back" onclick="openDetail('${slug}')">← Thông tin phim</button>
-        <h2>${m.name} ${ep ? '– ' + ep.name : ''}</h2>
+    <div class="detail-layout">
+      <div class="detail-hero">
+        <img src="${thumb}" alt="${m.name}" onerror="fallbackImg(event)">
+        <div class="detail-hero-grad"></div>
       </div>
-      <div class="video-wrap">
-        ${videoUrl
-          ? `<video id="videoPlayer" controls autoplay>
-               <source src="${videoUrl}" type="application/x-mpegURL">
-               Trình duyệt không hỗ trợ video này.
-             </video>`
-          : `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted)">
-               <div style="text-align:center"><div style="font-size:40px;margin-bottom:12px">📺</div>
-               <p>Không có link stream trực tiếp.<br>Thử embed:</p>
-               <a href="${ep?.link_embed||'#'}" target="_blank" style="color:var(--accent)">Mở link phim →</a></div>
-             </div>`
-        }
+      <div class="detail-body">
+        <div>
+          <div class="detail-poster"><img src="${poster}" alt="${m.name}" onerror="fallbackImg(event)"></div>
+        </div>
+        <div class="detail-info">
+          <div class="detail-title">${m.name}</div>
+          <div class="detail-orig">${m.origin_name||''}</div>
+          <div class="detail-meta">
+            ${rating}
+            <span>${m.year||''}</span>
+            <span>${m.time||''}</span>
+            <span class="mtag">${m.quality||'HD'}</span>
+            <span class="mtag">${m.lang||''}</span>
+            ${m.episode_current?`<span style="color:var(--gold)">${m.episode_current}</span>`:''}
+          </div>
+          <div class="detail-tags">${genres}${countries}</div>
+          <p class="detail-desc">${(m.content||'').replace(/<[^>]+>/g,'')}</p>
+          ${actors?`<div class="watch-cast">Diễn viên: <span>${actors}</span></div>`:''}
+          ${epSection}
+        </div>
       </div>
-      ${allEps.length > 1 ? `
-        <div style="margin-top:20px">
-          <div class="modal-section-title">DANH SÁCH TẬP</div>
-          <div class="ep-grid" style="max-height:none">${epBtns}</div>
-        </div>` : ''}
-    </div>
-    ${sectionHtml('📺 Xem Thêm Phim Bộ', [], '', '', true)}
-  `;
+    </div>`;
+
+  // wire up server switching on detail page
+  window._detailEps = eps;
+  window._detailSlug = m.slug;
+}
+
+window.selectDetailServer = function(si) {
+  const eps = window._detailEps || [];
+  const slug = window._detailSlug;
+  document.querySelectorAll('[id^="dstab-"]').forEach((b,i)=>{
+    b.classList.toggle('act', i===si);
+  });
+  const serverEps = eps[si]?.server_data||[];
+  document.getElementById('dEpList').innerHTML =
+    serverEps.map((ep,ei)=>`<button class="ep-btn" onclick="go('watch','${slug}',${si},${ei})">${ep.name}</button>`).join('');
+};
+
+// ── WATCH PAGE ──
+async function renderWatch() {
+  const app = document.getElementById('app');
+  let data = movieCache[S.slug];
+  if (!data) {
+    data = await api(`${API}/phim/${S.slug}`);
+    if (data) movieCache[S.slug] = data;
+  }
+  if (!data?.movie) {
+    app.innerHTML = `<div class="empty"><div class="ei">⚠️</div><p>Không tải được phim.</p></div>`;
+    return;
+  }
+
+  const m = data.movie;
+  const eps = data.episodes||[];
+  const si = Math.min(S.serverIdx, eps.length-1);
+  const server = eps[si];
+  const allEps = server?.server_data||[];
+  const ei = Math.min(S.epIdx, allEps.length-1);
+  const ep = allEps[ei];
+  const m3u8 = ep?.link_m3u8||'';
+
+  document.title = `${m.name} – ${ep?.name||''} – PhimHay`;
 
   // Load related
-  loadRelated(m);
+  const genreSlug = m.category?.[0]?.slug;
+  let related = [];
+  if (genreSlug) {
+    const rd = await api(`${API}/v1/api/the-loai/${genreSlug}?page=1`);
+    related = (rd?.data?.items||[]).filter(x=>x.slug!==m.slug).slice(0,10);
+  }
+
+  // Server tabs
+  const serverTabsHtml = eps.map((srv,i)=>
+    `<button class="stab ${i===si?'act':''}" onclick="switchServer(${i})">${srv.server_name}</button>`
+  ).join('');
+
+  // Ep buttons
+  const epBtnsHtml = allEps.map((e,i)=>
+    `<button class="ep-btn ${i===ei?'act':''}" onclick="switchEp(${i})" id="epb-${i}">${e.name}</button>`
+  ).join('');
+
+  // Side related
+  const sideHtml = related.map(r=>`
+    <div class="side-card" onclick="go('movie','${r.slug}')">
+      <div class="side-thumb"><img src="${imgUrl(r.thumb_url||r.poster_url)}" alt="${r.name}" onerror="fallbackImg(event)"></div>
+      <div class="side-info">
+        <div class="side-name">${r.name}</div>
+        <div class="side-sub">${r.year||''} · ${r.quality||'HD'}</div>
+        <div class="side-sub" style="color:var(--accent);font-weight:600">${r.episode_current||''}</div>
+      </div>
+    </div>`).join('');
+
+  const actors = (m.actor||[]).slice(0,5).join(', ');
+  const genres = (m.category||[]).map(c=>c.name).join(', ');
+
+  app.innerHTML = `
+    <div class="watch-layout">
+      <div class="watch-main">
+        <div class="watch-back" onclick="go('movie','${m.slug}')">← Quay lại ${m.name}</div>
+
+        <div class="player-wrap" id="playerWrap">
+          ${m3u8
+            ? `<media-player title="${m.name} – ${ep?.name||''}"
+                             src="${m3u8}"
+                             playsinline autoplay crossorigin>
+                 <media-provider></media-provider>
+                 <media-video-layout></media-video-layout>
+               </media-player>`
+            : ep?.link_embed
+              ? `<iframe src="${ep.link_embed}" style="width:100%;height:100%;border:none" allowfullscreen></iframe>`
+              : `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted);text-align:center"><p>Không có stream cho tập này.</p></div>`
+          }
+        </div>
+
+        <div class="watch-title">${m.name}</div>
+        <div class="watch-orig">${m.origin_name||''}</div>
+        <div class="watch-meta">
+          ${m.tmdb?.vote_average?`<span class="star" style="color:var(--gold)">★ ${m.tmdb.vote_average.toFixed(1)}</span>`:''}
+          <span>${m.year||''}</span>
+          <span>${m.time||''}</span>
+          <span class="mtag">${m.quality||'HD'}</span>
+          <span class="mtag">${m.lang||''}</span>
+          ${ep?`<span style="color:var(--accent);font-weight:700">${ep.name}</span>`:''}
+        </div>
+
+        ${eps.length>1||eps[0]?.server_data?.length>1?`
+          <div class="det-sub" style="margin-top:4px">Server</div>
+          <div class="server-tabs">${serverTabsHtml}</div>
+          ${allEps.length>1?`
+            <div class="det-sub">Tập Phim</div>
+            <div class="ep-scroll">${epBtnsHtml}</div>
+          `:''}
+        `:''}
+
+        <p class="watch-desc" style="margin-top:16px">${(m.content||'').replace(/<[^>]+>/g,'')}</p>
+        ${actors?`<div class="watch-cast">Diễn viên: <span>${actors}</span></div>`:''}
+        ${genres?`<div class="watch-cast" style="margin-top:4px">Thể loại: <span>${genres}</span></div>`:''}
+      </div>
+
+      <div class="watch-side">
+        <div class="side-title">Có Thể Bạn Thích</div>
+        <div class="side-list">${sideHtml || '<p style="color:var(--muted);font-size:12px">Đang tải...</p>'}</div>
+      </div>
+    </div>`;
+
+  // scroll active ep into view
+  setTimeout(()=>{
+    const btn = document.getElementById(`epb-${ei}`);
+    if (btn) btn.scrollIntoView({block:'nearest'});
+  }, 100);
+
+  // store for switching
+  window._watchEps = eps;
+  window._watchSlug = m.slug;
 }
 
-async function switchEp(idx) {
-  const allEps = currentMovie?.episodes?.[0]?.server_data || [];
-  state.epIndex = idx;
-  state.epSlug = allEps[idx]?.slug;
-  await renderWatch();
-}
-
-async function loadRelated(m) {
-  const genre = m.category?.[0]?.slug;
-  if (!genre) return;
-  const data = await apiFetch(`${API}/v1/api/the-loai/${genre}?page=1`);
-  const items = (data?.data?.items || []).filter(x => x.slug !== m.slug).slice(0, 12);
-  if (!items.length) return;
-  const section = document.createElement('div');
-  section.innerHTML = sectionHtml('📽️ Phim Liên Quan', items, 'genre', genre);
-  document.getElementById('app').appendChild(section.firstElementChild);
-}
+window.switchServer = function(si) {
+  pushState({...S, serverIdx: si, epIdx: 0});
+};
+window.switchEp = function(ei) {
+  pushState({...S, epIdx: ei});
+};
 
 // ── PAGINATION ──
-function paginationHtml(current, total) {
+function pagesHtml(cur, total) {
   if (total <= 1) return '';
-  total = Math.min(total, 50);
   let pages = [];
-  if (total <= 7) {
-    pages = Array.from({length: total}, (_, i) => i+1);
-  } else {
+  if (total <= 7) { pages = Array.from({length:total},(_,i)=>i+1); }
+  else {
     pages = [1];
-    if (current > 3) pages.push('...');
-    for (let i = Math.max(2, current-1); i <= Math.min(total-1, current+1); i++) pages.push(i);
-    if (current < total - 2) pages.push('...');
+    if (cur > 3) pages.push('…');
+    for (let i=Math.max(2,cur-1); i<=Math.min(total-1,cur+1); i++) pages.push(i);
+    if (cur < total-2) pages.push('…');
     pages.push(total);
   }
   const btns = pages.map(p =>
-    p === '...'
-      ? `<span class="page-btn" style="cursor:default">…</span>`
-      : `<button class="page-btn ${p===current?'active':''}" onclick="goPage(${p})">${p}</button>`
+    p==='…' ? `<span class="pg" style="cursor:default">…</span>`
+             : `<button class="pg ${p===cur?'act':''}" onclick="goPage(${p})">${p}</button>`
   ).join('');
-  return `
-    <div class="pagination">
-      <button class="page-btn" ${current<=1?'disabled':''} onclick="goPage(${current-1})">‹</button>
-      ${btns}
-      <button class="page-btn" ${current>=total?'disabled':''} onclick="goPage(${current+1})">›</button>
-    </div>`;
+  return `<div class="pages">
+    <button class="pg" ${cur<=1?'disabled':''} onclick="goPage(${cur-1})">‹</button>
+    ${btns}
+    <button class="pg" ${cur>=total?'disabled':''} onclick="goPage(${cur+1})">›</button>
+  </div>`;
 }
 
-function goPage(p) {
-  state.page = p;
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  render();
-}
-
-// ── INIT ──
+// ── BOOT ──
 loadMenus();
+// Parse initial hash
+const initHash = location.hash || '#home';
+const initS = hashToState(initHash);
+if (initS.view === 'search') initS.kw = decodeURIComponent(initS.slug);
+S = initS;
 render();
 </script>
 </body>

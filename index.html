@@ -267,7 +267,7 @@ const PROXY_PREFIX = '/proxy-stream';
 
 // ĐĂNG KÝ SERVICE WORKER CHẶN QUẢNG CÁO
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/service-worker.js')
+  navigator.serviceWorker.register('./service-worker.js')
     .then(() => console.log('✅ Service Worker proxy streams đã kích hoạt thành công.'))
     .catch(err => console.error('❌ Lỗi đăng ký Service Worker:', err));
 }

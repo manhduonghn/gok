@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PhimHay – Xem Phim Online</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #0a0a0f;
+    --surface:  #12121a;
+    --card:     #1a1a26;
+    --border:   #2a2a3a;
+    --accent:   #e8173a;
+    --accent2:  #ff6b35;
+    --gold:     #f5c518;
+    --text:     #e8e8f0;
+    --muted:    #7a7a9a;
+    --radius:   10px;
+    --font-head: 'Oswald', sans-serif;
+    --font-body: 'Be Vietnam Pro', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,10,15,0.92);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex; align-items: center; gap: 16px;
+    height: 58px;
+  }
+  .logo {
+    font-family: var(--font-head);
+    font-size: 22px; font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 1px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .logo span { color: var(--text); }
+
+  /* Search */
+  .search-wrap {
+    flex: 1; max-width: 420px;
+    position: relative;
+  }
+  .search-wrap input {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 8px 18px 8px 40px;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 13px;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .search-wrap input:focus { border-color: var(--accent); }
+  .search-wrap input::placeholder { color: var(--muted); }
+  .search-icon {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    color: var(--muted); font-size: 14px; pointer-events: none;
+  }
+  .search-btn {
+    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+    background: var(--accent); border: none; border-radius: 16px;
+    padding: 4px 12px; color: #fff; font-size: 12px; font-weight: 600;
+    cursor: pointer; font-family: var(--font-body);
+  }
+
+  /* Nav pills */
+  .nav-links {
+    display: flex; gap: 4px; align-items: center; flex-shrink: 0;
+    overflow-x: auto; scrollbar-width: none;
+  }
+  .nav-links::-webkit-scrollbar { display: none; }
+  .nav-btn {
+    background: none; border: none; color: var(--muted);
+    font-family: var(--font-body); font-size: 13px; font-weight: 500;
+    padding: 6px 12px; border-radius: 6px; cursor: pointer;
+    white-space: nowrap; transition: color .2s, background .2s;
+  }
+  .nav-btn:hover, .nav-btn.active {
+    color: var(--text); background: var(--card);
+  }
+  .nav-btn.active { color: var(--accent); }
+
+  /* ── MAIN ── */
+  #app { max-width: 1400px; margin: 0 auto; padding: 0 20px 60px; }
+
+  /* ── HERO / FEATURED ── */
+  .hero {
+    margin: 24px 0 36px;
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    aspect-ratio: 21/8;
+    min-height: 240px;
+    background: var(--card);
+    cursor: pointer;
+  }
+  .hero-img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform .5s ease;
+  }
+  .hero:hover .hero-img { transform: scale(1.03); }
+  .hero-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, rgba(10,10,15,.92) 0%, rgba(10,10,15,.5) 50%, transparent 100%);
+    display: flex; align-items: center;
+    padding: 32px 48px;
+  }
+  .hero-info { max-width: 480px; }
+  .hero-badge {
+    display: inline-block;
+    background: var(--accent); color: #fff;
+    font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+    padding: 3px 10px; border-radius: 4px;
+    text-transform: uppercase; margin-bottom: 12px;
+  }
+  .hero-title {
+    font-family: var(--font-head);
+    font-size: clamp(22px, 3.5vw, 44px);
+    font-weight: 700; line-height: 1.1;
+    margin-bottom: 8px; color: #fff;
+  }
+  .hero-meta {
+    display: flex; gap: 14px; align-items: center;
+    color: var(--muted); font-size: 12px; margin-bottom: 14px; flex-wrap: wrap;
+  }
+  .hero-meta .star { color: var(--gold); }
+  .hero-desc {
+    font-size: 13px; color: #b0b0c8; line-height: 1.7;
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+    overflow: hidden; margin-bottom: 20px;
+  }
+  .hero-actions { display: flex; gap: 10px; }
+  .btn-play {
+    background: var(--accent);
+    color: #fff; border: none;
+    padding: 10px 24px; border-radius: 8px;
+    font-family: var(--font-body); font-size: 14px; font-weight: 600;
+    cursor: pointer; display: flex; align-items: center; gap: 8px;
+    transition: background .2s, transform .15s;
+  }
+  .btn-play:hover { background: #c41230; transform: translateY(-1px); }
+  .btn-info {
+    background: rgba(255,255,255,.12);
+    color: #fff; border: 1px solid rgba(255,255,255,.2);
+    padding: 10px 20px; border-radius: 8px;
+    font-family: var(--font-body); font-size: 14px; font-weight: 500;
+    cursor: pointer; transition: background .2s;
+  }
+  .btn-info:hover { background: rgba(255,255,255,.2); }
+
+  /* ── SECTION ── */
+  .section { margin-bottom: 40px; }
+  .section-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px; padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-title {
+    font-family: var(--font-head);
+    font-size: 18px; font-weight: 600; color: var(--text);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-title::before {
+    content: '';
+    display: inline-block; width: 4px; height: 20px;
+    background: var(--accent); border-radius: 2px;
+  }
+  .see-all {
+    background: none; border: 1px solid var(--border);
+    color: var(--muted); font-size: 12px; font-weight: 500;
+    padding: 5px 14px; border-radius: 16px; cursor: pointer;
+    font-family: var(--font-body);
+    transition: color .2s, border-color .2s;
+  }
+  .see-all:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* ── FILTER CHIPS ── */
+  .chip-row {
+    display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;
+  }
+  .chip {
+    background: var(--card); border: 1px solid var(--border);
+    color: var(--muted); font-size: 12px; font-weight: 500;
+    padding: 5px 14px; border-radius: 20px; cursor: pointer;
+    font-family: var(--font-body);
+    transition: all .2s;
+  }
+  .chip:hover { color: var(--text); border-color: var(--muted); }
+  .chip.active {
+    background: var(--accent); border-color: var(--accent);
+    color: #fff;
+  }
+
+  /* ── GRID ── */
+  .movie-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 16px;
+  }
+  .movie-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform .2s, box-shadow .2s;
+    position: relative;
+  }
+  .movie-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px rgba(0,0,0,.6);
+  }
+  .movie-card:hover .card-overlay { opacity: 1; }
+  .poster-wrap {
+    position: relative;
+    aspect-ratio: 2/3;
+    overflow: hidden;
+    background: var(--surface);
+  }
+  .poster-wrap img {
+    width: 100%; height: 100%; object-fit: cover;
+    display: block; transition: transform .3s;
+  }
+  .movie-card:hover .poster-wrap img { transform: scale(1.07); }
+  .card-overlay {
+    position: absolute; inset: 0;
+    background: rgba(10,10,15,.7);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity .2s;
+  }
+  .play-icon {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; color: #fff;
+    box-shadow: 0 4px 20px rgba(232,23,58,.5);
+  }
+  .card-badges {
+    position: absolute; top: 8px; left: 8px;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .badge {
+    font-size: 9px; font-weight: 700; letter-spacing: 1px;
+    padding: 2px 7px; border-radius: 4px;
+    text-transform: uppercase;
+  }
+  .badge-quality { background: var(--accent); color: #fff; }
+  .badge-ep { background: rgba(0,0,0,.75); color: var(--gold); border: 1px solid rgba(245,197,24,.3); }
+  .badge-new { background: #16a34a; color: #fff; }
+  .card-info { padding: 10px; }
+  .card-title {
+    font-size: 13px; font-weight: 600; color: var(--text);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    margin-bottom: 3px;
+  }
+  .card-sub {
+    font-size: 11px; color: var(--muted);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+
+  /* ── PAGINATION ── */
+  .pagination {
+    display: flex; justify-content: center; gap: 6px;
+    margin-top: 28px; flex-wrap: wrap;
+  }
+  .page-btn {
+    background: var(--card); border: 1px solid var(--border);
+    color: var(--muted); width: 36px; height: 36px; border-radius: 8px;
+    font-family: var(--font-body); font-size: 13px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .2s;
+  }
+  .page-btn:hover { color: var(--text); border-color: var(--muted); }
+  .page-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .page-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+  /* ── DROPDOWN MENUS ── */
+  .nav-dropdown { position: relative; }
+  .dropdown-menu {
+    position: absolute; top: calc(100% + 12px); left: 0;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 8px;
+    min-width: 200px; z-index: 200;
+    display: none; box-shadow: 0 20px 60px rgba(0,0,0,.6);
+  }
+  .nav-dropdown.open .dropdown-menu { display: block; }
+  .dropdown-menu a {
+    display: block; padding: 8px 14px; border-radius: 6px;
+    color: var(--muted); font-size: 13px; text-decoration: none;
+    cursor: pointer; transition: color .15s, background .15s;
+  }
+  .dropdown-menu a:hover { color: var(--text); background: var(--card); }
+  .dropdown-menu .dm-title {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px;
+    color: var(--accent); font-weight: 700; padding: 4px 14px 8px;
+    border-bottom: 1px solid var(--border); margin-bottom: 4px;
+  }
+  .dropdown-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; min-width: 280px; }
+
+  /* ── MODAL / DETAIL ── */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 300;
+    background: rgba(0,0,0,.8); backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px; opacity: 0; pointer-events: none; transition: opacity .25s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--surface); border-radius: 16px;
+    width: 100%; max-width: 900px; max-height: 90vh;
+    overflow-y: auto; position: relative;
+    transform: translateY(20px); transition: transform .25s;
+  }
+  .modal-overlay.open .modal { transform: translateY(0); }
+  .modal-close {
+    position: absolute; top: 16px; right: 16px; z-index: 1;
+    background: rgba(0,0,0,.6); border: none; color: var(--text);
+    width: 34px; height: 34px; border-radius: 50%; font-size: 18px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+  .modal-hero {
+    position: relative; aspect-ratio: 16/7; overflow: hidden;
+    background: var(--card);
+  }
+  .modal-hero img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .modal-hero-grad {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 60%;
+    background: linear-gradient(transparent, var(--surface));
+  }
+  .modal-body { padding: 20px 28px 28px; }
+  .modal-title {
+    font-family: var(--font-head);
+    font-size: 28px; font-weight: 700; line-height: 1.2;
+    margin-bottom: 6px;
+  }
+  .modal-orig { color: var(--muted); font-size: 14px; margin-bottom: 12px; }
+  .modal-meta {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    margin-bottom: 16px; font-size: 13px; color: var(--muted);
+    align-items: center;
+  }
+  .meta-tag {
+    background: var(--card); border: 1px solid var(--border);
+    padding: 3px 10px; border-radius: 4px; font-size: 12px;
+  }
+  .modal-desc {
+    font-size: 13px; color: #b0b0c8; line-height: 1.8;
+    margin-bottom: 20px;
+  }
+  .modal-section-title {
+    font-size: 12px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1px; color: var(--muted); margin-bottom: 12px;
+  }
+  .ep-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+    gap: 8px; max-height: 200px; overflow-y: auto;
+  }
+  .ep-btn {
+    background: var(--card); border: 1px solid var(--border);
+    color: var(--text); font-family: var(--font-body); font-size: 12px;
+    padding: 8px 4px; border-radius: 6px; cursor: pointer;
+    text-align: center; transition: all .15s;
+  }
+  .ep-btn:hover, .ep-btn.active {
+    background: var(--accent); border-color: var(--accent); color: #fff;
+  }
+
+  /* ── VIDEO PLAYER ── */
+  .video-section { margin-bottom: 40px; }
+  .video-wrap {
+    background: #000; border-radius: 12px;
+    overflow: hidden; aspect-ratio: 16/9;
+    position: relative;
+  }
+  #videoPlayer {
+    width: 100%; height: 100%; display: block;
+    background: #000;
+  }
+  .video-title-bar {
+    padding: 14px 0 8px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .video-title-bar h2 {
+    font-family: var(--font-head); font-size: 18px; font-weight: 600;
+  }
+  .btn-back {
+    background: var(--card); border: 1px solid var(--border);
+    color: var(--muted); padding: 6px 16px; border-radius: 8px;
+    font-family: var(--font-body); font-size: 13px; cursor: pointer;
+    transition: color .2s;
+  }
+  .btn-back:hover { color: var(--text); }
+
+  /* ── LOADING ── */
+  .skeleton {
+    background: linear-gradient(90deg, var(--card) 25%, var(--border) 50%, var(--card) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    border-radius: var(--radius);
+  }
+  @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+  .skeleton-card { aspect-ratio: 2/3; }
+  .spinner {
+    width: 40px; height: 40px; border: 3px solid var(--border);
+    border-top-color: var(--accent); border-radius: 50%;
+    animation: spin .8s linear infinite; margin: 60px auto;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .error-box {
+    text-align: center; padding: 60px 20px;
+    color: var(--muted);
+  }
+  .error-box .err-icon { font-size: 40px; margin-bottom: 14px; }
+  .error-box p { font-size: 14px; margin-bottom: 16px; }
+  .retry-btn {
+    background: var(--accent); color: #fff; border: none;
+    padding: 8px 20px; border-radius: 8px; cursor: pointer;
+    font-family: var(--font-body); font-size: 13px;
+  }
+
+  /* ── TOAST ── */
+  #toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: var(--card); border: 1px solid var(--border);
+    color: var(--text); padding: 10px 20px; border-radius: 8px;
+    font-size: 13px; z-index: 999; opacity: 0;
+    transition: opacity .3s; pointer-events: none;
+    white-space: nowrap;
+  }
+  #toast.show { opacity: 1; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    nav { padding: 0 12px; }
+    #app { padding: 0 12px 40px; }
+    .hero-overlay { padding: 20px 20px; }
+    .hero-desc { display: none; }
+    .movie-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; }
+    .nav-links { display: none; }
+    .modal-body { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo" onclick="navigateTo('home')">PHIM<span>HAY</span></div>
+
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="Tìm phim, diễn viên..." 
+           onkeydown="if(event.key==='Enter') doSearch()">
+    <button class="search-btn" onclick="doSearch()">Tìm</button>
+  </div>
+
+  <div class="nav-links">
+    <button class="nav-btn" onclick="navigateTo('home')" id="btn-home">Trang chủ</button>
+    <button class="nav-btn" onclick="navigateTo('list','phim-bo')" id="btn-phim-bo">Phim Bộ</button>
+    <button class="nav-btn" onclick="navigateTo('list','phim-le')" id="btn-phim-le">Phim Lẻ</button>
+    <button class="nav-btn" onclick="navigateTo('list','hoat-hinh')" id="btn-hoat-hinh">Hoạt Hình</button>
+    <div class="nav-dropdown" id="theloaiDrop">
+      <button class="nav-btn" onclick="toggleDrop('theloaiDrop')">Thể Loại ▾</button>
+      <div class="dropdown-menu" id="theloaiMenu"><div class="dm-title">Thể Loại</div><div class="dropdown-cols" id="theloaiList"></div></div>
+    </div>
+    <div class="nav-dropdown" id="quocgiaDrop">
+      <button class="nav-btn" onclick="toggleDrop('quocgiaDrop')">Quốc Gia ▾</button>
+      <div class="dropdown-menu" id="quocgiaMenu"><div class="dm-title">Quốc Gia</div><div class="dropdown-cols" id="quocgiaList"></div></div>
+    </div>
+    <button class="nav-btn" onclick="navigateTo('list','tv-shows')" id="btn-tv-shows">TV Shows</button>
+  </div>
+</nav>
+
+<div id="app"><div class="spinner"></div></div>
+<div id="toast"></div>
+
+<!-- MODAL DETAIL -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<script>
+const API = 'https://phimapi.com';
+let state = { view: 'home', slug: null, page: 1, keyword: '', theloai: null, quocgia: null };
+let currentMovie = null;
+let currentEpSlug = null;
+
+// ── HELPERS ──
+function img(path) {
+  if (!path) return 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="160" height="240"%3E%3Crect fill="%231a1a26" width="160" height="240"/%3E%3Ctext x="80" y="120" text-anchor="middle" fill="%237a7a9a" font-size="32"%3E🎬%3C/text%3E%3C/svg%3E';
+  if (path.startsWith('http')) return path;
+  return `https://phimimg.com/${path}`;
+}
+
+function toast(msg, dur=2500) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), dur);
+}
+
+async function apiFetch(url) {
+  try {
+    const r = await fetch(url);
+    if (!r.ok) throw new Error(r.status);
+    return await r.json();
+  } catch (e) {
+    console.error(e); return null;
+  }
+}
+
+function skeletonGrid(n=12) {
+  return `<div class="movie-grid">${Array(n).fill('<div class="skeleton skeleton-card"></div>').join('')}</div>`;
+}
+
+function setActiveNav(id) {
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (el) el.classList.add('active');
+}
+
+// ── DROPDOWNS ──
+function toggleDrop(id) {
+  const el = document.getElementById(id);
+  const wasOpen = el.classList.contains('open');
+  document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
+  if (!wasOpen) el.classList.add('open');
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('.nav-dropdown')) {
+    document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
+  }
+});
+
+async function loadMenus() {
+  const [tl, qg] = await Promise.all([
+    apiFetch(`${API}/the-loai`),
+    apiFetch(`${API}/quoc-gia`)
+  ]);
+  if (tl?.data) {
+    const el = document.getElementById('theloaiList');
+    el.innerHTML = tl.data.map(g =>
+      `<a onclick="navigateTo('genre','${g.slug}')">${g.name}</a>`
+    ).join('');
+  }
+  if (qg?.data) {
+    const el = document.getElementById('quocgiaList');
+    el.innerHTML = qg.data.map(c =>
+      `<a onclick="navigateTo('country','${c.slug}')">${c.name}</a>`
+    ).join('');
+  }
+}
+
+// ── NAVIGATE ──
+function navigateTo(view, slug='', page=1) {
+  state = { view, slug, page, keyword: state.keyword };
+  document.querySelectorAll('.nav-dropdown').forEach(d => d.classList.remove('open'));
+  render();
+}
+
+function doSearch() {
+  const kw = document.getElementById('searchInput').value.trim();
+  if (!kw) return;
+  state = { view: 'search', slug: '', page: 1, keyword: kw };
+  render();
+}
+
+// ── RENDER ROUTER ──
+async function render() {
+  const app = document.getElementById('app');
+  app.innerHTML = `<div class="spinner"></div>`;
+
+  switch (state.view) {
+    case 'home':    setActiveNav('btn-home');    await renderHome(); break;
+    case 'list':    await renderList(); break;
+    case 'genre':   await renderGenre(); break;
+    case 'country': await renderCountry(); break;
+    case 'search':  await renderSearch(); break;
+    case 'watch':   await renderWatch(); break;
+  }
+}
+
+// ── HOME ──
+async function renderHome() {
+  setActiveNav('btn-home');
+  const app = document.getElementById('app');
+
+  // Load new movies + phim bo + phim le in parallel
+  const [newMovies, phimBo, phimLe, phimHoatHinh] = await Promise.all([
+    apiFetch(`${API}/danh-sach/phim-moi-cap-nhat-v3?page=1`),
+    apiFetch(`${API}/v1/api/danh-sach/phim-bo?page=1`),
+    apiFetch(`${API}/v1/api/danh-sach/phim-le?page=1`),
+    apiFetch(`${API}/v1/api/danh-sach/hoat-hinh?page=1`),
+  ]);
+
+  const newItems = newMovies?.items || [];
+  const hero = newItems[0];
+  const featured = newItems.slice(1, 7);
+  const bos = phimBo?.data?.items || [];
+  const les = phimLe?.data?.items || [];
+  const hans = phimHoatHinh?.data?.items || [];
+
+  app.innerHTML = `
+    ${hero ? heroHtml(hero) : ''}
+    ${sectionHtml('🔥 Mới Cập Nhật', newItems.slice(1,13), 'list','phim-moi')}
+    ${sectionHtml('📺 Phim Bộ', bos.slice(0,12), 'list','phim-bo')}
+    ${sectionHtml('🎬 Phim Lẻ', les.slice(0,12), 'list','phim-le')}
+    ${sectionHtml('🎌 Hoạt Hình', hans.slice(0,12), 'list','hoat-hinh')}
+  `;
+}
+
+function heroHtml(m) {
+  const thumb = m.thumb_url || m.poster_url || '';
+  const name = m.name || m.origin_name || 'Không rõ';
+  const year = m.year || '';
+  const ep = m.episode_current || '';
+  return `
+    <div class="hero" onclick="openDetail('${m.slug}')">
+      <img class="hero-img" src="${img(thumb)}" alt="${name}" onerror="this.src='https://via.placeholder.com/1280x540/0a0a0f/333?text=PhimHay'">
+      <div class="hero-overlay">
+        <div class="hero-info">
+          <span class="hero-badge">Nổi bật</span>
+          <div class="hero-title">${name}</div>
+          <div class="hero-meta">
+            <span class="star">★</span>
+            <span>${year}</span>
+            ${ep ? `<span>${ep}</span>` : ''}
+            <span class="meta-tag">HD</span>
+          </div>
+          <div class="hero-desc">${m.origin_name || ''}</div>
+          <div class="hero-actions">
+            <button class="btn-play" onclick="event.stopPropagation();openDetail('${m.slug}')">▶ Xem Ngay</button>
+            <button class="btn-info" onclick="event.stopPropagation();openDetail('${m.slug}')">Thông Tin</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function sectionHtml(title, items, nav, slug, hideAll=false) {
+  if (!items.length) return '';
+  const seeAll = hideAll ? '' : `<button class="see-all" onclick="navigateTo('${nav}','${slug}')">Xem tất cả →</button>`;
+  return `
+    <div class="section">
+      <div class="section-head">
+        <div class="section-title">${title}</div>
+        ${seeAll}
+      </div>
+      ${gridHtml(items)}
+    </div>`;
+}
+
+function gridHtml(items) {
+  return `<div class="movie-grid">${items.map(cardHtml).join('')}</div>`;
+}
+
+function cardHtml(m) {
+  const slug = m.slug || '';
+  const name = m.name || m.title || 'Không rõ';
+  const origName = m.origin_name || '';
+  const thumb = m.thumb_url || m.poster_url || '';
+  const year = m.year || '';
+  const ep = m.episode_current || m.time || '';
+  const quality = m.quality || 'HD';
+  return `
+    <div class="movie-card" onclick="openDetail('${slug}')">
+      <div class="poster-wrap">
+        <img src="${img(thumb)}" alt="${name}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22160%22 height=%22240%22%3E%3Crect fill=%22%231a1a26%22 width=%22160%22 height=%22240%22/%3E%3C/svg%3E'">
+        <div class="card-overlay"><div class="play-icon">▶</div></div>
+        <div class="card-badges">
+          <span class="badge badge-quality">${quality}</span>
+          ${ep ? `<span class="badge badge-ep">${ep}</span>` : ''}
+        </div>
+      </div>
+      <div class="card-info">
+        <div class="card-title">${name}</div>
+        <div class="card-sub">${origName || year}</div>
+      </div>
+    </div>`;
+}
+
+// ── LIST PAGE ──
+const TYPE_NAMES = {
+  'phim-bo':'Phim Bộ','phim-le':'Phim Lẻ','tv-shows':'TV Shows',
+  'hoat-hinh':'Hoạt Hình','phim-vietsub':'Vietsub','phim-thuyet-minh':'Thuyết Minh',
+  'phim-long-tieng':'Lồng Tiếng','phim-moi':'Mới Cập Nhật'
+};
+const TYPE_LIST = ['phim-bo','phim-le','tv-shows','hoat-hinh','phim-vietsub','phim-thuyet-minh','phim-long-tieng'];
+
+async function renderList() {
+  const app = document.getElementById('app');
+  const typeId = 'btn-' + state.slug;
+  setActiveNav(typeId);
+
+  let url, data;
+  if (state.slug === 'phim-moi') {
+    url = `${API}/danh-sach/phim-moi-cap-nhat-v3?page=${state.page}`;
+    data = await apiFetch(url);
+    const items = data?.items || [];
+    const total = Math.ceil((data?.pagination?.totalItems || items.length * 5) / (data?.pagination?.totalItemsPerPage || 24));
+    renderListPage('Mới Cập Nhật', items, total);
+  } else {
+    url = `${API}/v1/api/danh-sach/${state.slug}?page=${state.page}`;
+    data = await apiFetch(url);
+    const items = data?.data?.items || [];
+    const params = data?.data?.params?.pagination || {};
+    const total = Math.ceil((params.totalItems||0) / (params.totalItemsPerPage||24));
+    renderListPage(TYPE_NAMES[state.slug] || state.slug, items, total);
+  }
+}
+
+function renderListPage(title, items, totalPages) {
+  const app = document.getElementById('app');
+  const chips = TYPE_LIST.map(t =>
+    `<span class="chip ${t===state.slug?'active':''}" onclick="navigateTo('list','${t}')">${TYPE_NAMES[t]}</span>`
+  ).join('');
+
+  if (!items.length) {
+    app.innerHTML = `<div class="error-box"><div class="err-icon">😔</div><p>Không có phim nào.</p></div>`;
+    return;
+  }
+
+  app.innerHTML = `
+    <div style="padding-top:24px">
+      <div class="chip-row">${chips}</div>
+      <div class="section-head">
+        <div class="section-title">${title}</div>
+        <span style="color:var(--muted);font-size:12px">Trang ${state.page}</span>
+      </div>
+      ${gridHtml(items)}
+      ${paginationHtml(state.page, totalPages || 10)}
+    </div>`;
+}
+
+// ── GENRE ──
+async function renderGenre() {
+  const app = document.getElementById('app');
+  const url = `${API}/v1/api/the-loai/${state.slug}?page=${state.page}`;
+  const data = await apiFetch(url);
+  const items = data?.data?.items || [];
+  const seoName = data?.data?.seoOnPage?.titleHead || state.slug;
+  const params = data?.data?.params?.pagination || {};
+  const total = Math.ceil((params.totalItems||0)/(params.totalItemsPerPage||24));
+
+  if (!items.length) {
+    app.innerHTML = `<div class="error-box"><div class="err-icon">😔</div><p>Không có phim nào.</p></div>`;
+    return;
+  }
+  app.innerHTML = `
+    <div style="padding-top:24px">
+      <div class="section-head">
+        <div class="section-title">Thể Loại: ${seoName}</div>
+        <span style="color:var(--muted);font-size:12px">Trang ${state.page}</span>
+      </div>
+      ${gridHtml(items)}
+      ${paginationHtml(state.page, total || 10)}
+    </div>`;
+}
+
+// ── COUNTRY ──
+async function renderCountry() {
+  const app = document.getElementById('app');
+  const url = `${API}/v1/api/quoc-gia/${state.slug}?page=${state.page}`;
+  const data = await apiFetch(url);
+  const items = data?.data?.items || [];
+  const seoName = data?.data?.seoOnPage?.titleHead || state.slug;
+  const params = data?.data?.params?.pagination || {};
+  const total = Math.ceil((params.totalItems||0)/(params.totalItemsPerPage||24));
+
+  if (!items.length) {
+    app.innerHTML = `<div class="error-box"><div class="err-icon">😔</div><p>Không có phim nào.</p></div>`;
+    return;
+  }
+  app.innerHTML = `
+    <div style="padding-top:24px">
+      <div class="section-head">
+        <div class="section-title">Quốc Gia: ${seoName}</div>
+        <span style="color:var(--muted);font-size:12px">Trang ${state.page}</span>
+      </div>
+      ${gridHtml(items)}
+      ${paginationHtml(state.page, total || 10)}
+    </div>`;
+}
+
+// ── SEARCH ──
+async function renderSearch() {
+  const app = document.getElementById('app');
+  const url = `${API}/v1/api/tim-kiem?keyword=${encodeURIComponent(state.keyword)}&page=${state.page}`;
+  const data = await apiFetch(url);
+  const items = data?.data?.items || [];
+  const params = data?.data?.params?.pagination || {};
+  const total = Math.ceil((params.totalItems||0)/(params.totalItemsPerPage||24));
+
+  if (!items.length) {
+    app.innerHTML = `<div class="error-box"><div class="err-icon">🔍</div><p>Không tìm thấy kết quả cho "<strong>${state.keyword}</strong>"</p></div>`;
+    return;
+  }
+  app.innerHTML = `
+    <div style="padding-top:24px">
+      <div class="section-head">
+        <div class="section-title">🔍 Kết quả: "${state.keyword}"</div>
+        <span style="color:var(--muted);font-size:12px">${params.totalItems||''} phim</span>
+      </div>
+      ${gridHtml(items)}
+      ${paginationHtml(state.page, total || 5)}
+    </div>`;
+}
+
+// ── DETAIL MODAL ──
+async function openDetail(slug) {
+  if (!slug) return;
+  const modal = document.getElementById('detailModal');
+  document.getElementById('modalContent').innerHTML = `<div class="spinner" style="padding:60px 0"></div>`;
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  const data = await apiFetch(`${API}/phim/${slug}`);
+  if (!data?.movie) {
+    document.getElementById('modalContent').innerHTML = `<div class="error-box"><div class="err-icon">⚠️</div><p>Không tải được thông tin phim.</p></div>`;
+    return;
+  }
+  currentMovie = data;
+  const m = data.movie;
+  const eps = data.episodes || [];
+
+  const thumb = m.thumb_url || m.poster_url || '';
+  const genres = (m.category || []).map(c => `<span class="meta-tag">${c.name}</span>`).join('');
+  const countries = (m.country || []).map(c => `<span class="meta-tag">${c.name}</span>`).join('');
+
+  // Build episode buttons
+  let epSection = '';
+  if (eps.length > 0) {
+    const server = eps[0];
+    const epBtns = (server.server_data || []).map((ep, i) =>
+      `<button class="ep-btn" onclick="watchEpisode('${slug}','${ep.slug}',${i})" id="epbtn-${i}">
+        ${ep.name}
+      </button>`
+    ).join('');
+    epSection = epBtns ? `
+      <div class="modal-section-title">TẬP PHIM (${server.server_data.length} tập)</div>
+      <div class="ep-grid">${epBtns}</div>
+      <div style="margin-top:16px">
+        <button class="btn-play" onclick="watchEpisode('${slug}','${server.server_data[0].slug}',0)">▶ Xem Tập Đầu</button>
+      </div>` : `<button class="btn-play" onclick="watchEpisode('${slug}','${(server.server_data[0]||{}).slug||''}',0)">▶ Xem Ngay</button>`;
+  }
+
+  document.getElementById('modalContent').innerHTML = `
+    <div class="modal-hero">
+      <img src="${img(thumb)}" alt="${m.name}" onerror="this.style.display='none'">
+      <div class="modal-hero-grad"></div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-title">${m.name}</div>
+      <div class="modal-orig">${m.origin_name || ''}</div>
+      <div class="modal-meta">
+        <span class="star" style="color:var(--gold)">★ ${m.tmdb?.vote_average?.toFixed(1) || 'N/A'}</span>
+        <span>${m.year || ''}</span>
+        <span>${m.time || ''}</span>
+        <span>${m.quality || 'HD'}</span>
+        <span>${m.lang || ''}</span>
+        ${genres}
+        ${countries}
+      </div>
+      <p class="modal-desc">${(m.content||'Đang cập nhật nội dung...').replace(/<[^>]+>/g,'')}</p>
+      ${epSection}
+    </div>`;
+}
+
+function closeModal() {
+  document.getElementById('detailModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.getElementById('detailModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeModal();
+});
+
+// ── WATCH ──
+async function watchEpisode(movieSlug, epSlug, epIndex) {
+  closeModal();
+  state = { view: 'watch', slug: movieSlug, epSlug, epIndex, page: 1 };
+  await renderWatch(epSlug, epIndex);
+}
+
+async function renderWatch(epSlug, epIndex) {
+  const app = document.getElementById('app');
+  app.innerHTML = `<div class="spinner"></div>`;
+
+  const slug = state.slug || epSlug;
+  if (!currentMovie || currentMovie.movie?.slug !== slug) {
+    const data = await apiFetch(`${API}/phim/${slug}`);
+    if (!data?.movie) {
+      app.innerHTML = `<div class="error-box"><div class="err-icon">⚠️</div><p>Không tải được phim.</p></div>`;
+      return;
+    }
+    currentMovie = data;
+  }
+
+  const m = currentMovie.movie;
+  const eps = currentMovie.episodes || [];
+  const server = eps[0];
+  const allEps = server?.server_data || [];
+  const idx = state.epIndex ?? epIndex ?? 0;
+  const ep = allEps[idx] || allEps[0];
+  const videoUrl = ep?.link_m3u8 || ep?.link_embed || '';
+
+  const epBtns = allEps.map((e, i) =>
+    `<button class="ep-btn ${i===idx?'active':''}" 
+     onclick="switchEp(${i})">${e.name}</button>`
+  ).join('');
+
+  app.innerHTML = `
+    <div class="video-section" style="padding-top:20px">
+      <div class="video-title-bar">
+        <button class="btn-back" onclick="openDetail('${slug}')">← Thông tin phim</button>
+        <h2>${m.name} ${ep ? '– ' + ep.name : ''}</h2>
+      </div>
+      <div class="video-wrap">
+        ${videoUrl
+          ? `<video id="videoPlayer" controls autoplay>
+               <source src="${videoUrl}" type="application/x-mpegURL">
+               Trình duyệt không hỗ trợ video này.
+             </video>`
+          : `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted)">
+               <div style="text-align:center"><div style="font-size:40px;margin-bottom:12px">📺</div>
+               <p>Không có link stream trực tiếp.<br>Thử embed:</p>
+               <a href="${ep?.link_embed||'#'}" target="_blank" style="color:var(--accent)">Mở link phim →</a></div>
+             </div>`
+        }
+      </div>
+      ${allEps.length > 1 ? `
+        <div style="margin-top:20px">
+          <div class="modal-section-title">DANH SÁCH TẬP</div>
+          <div class="ep-grid" style="max-height:none">${epBtns}</div>
+        </div>` : ''}
+    </div>
+    ${sectionHtml('📺 Xem Thêm Phim Bộ', [], '', '', true)}
+  `;
+
+  // Load related
+  loadRelated(m);
+}
+
+async function switchEp(idx) {
+  const allEps = currentMovie?.episodes?.[0]?.server_data || [];
+  state.epIndex = idx;
+  state.epSlug = allEps[idx]?.slug;
+  await renderWatch();
+}
+
+async function loadRelated(m) {
+  const genre = m.category?.[0]?.slug;
+  if (!genre) return;
+  const data = await apiFetch(`${API}/v1/api/the-loai/${genre}?page=1`);
+  const items = (data?.data?.items || []).filter(x => x.slug !== m.slug).slice(0, 12);
+  if (!items.length) return;
+  const section = document.createElement('div');
+  section.innerHTML = sectionHtml('📽️ Phim Liên Quan', items, 'genre', genre);
+  document.getElementById('app').appendChild(section.firstElementChild);
+}
+
+// ── PAGINATION ──
+function paginationHtml(current, total) {
+  if (total <= 1) return '';
+  total = Math.min(total, 50);
+  let pages = [];
+  if (total <= 7) {
+    pages = Array.from({length: total}, (_, i) => i+1);
+  } else {
+    pages = [1];
+    if (current > 3) pages.push('...');
+    for (let i = Math.max(2, current-1); i <= Math.min(total-1, current+1); i++) pages.push(i);
+    if (current < total - 2) pages.push('...');
+    pages.push(total);
+  }
+  const btns = pages.map(p =>
+    p === '...'
+      ? `<span class="page-btn" style="cursor:default">…</span>`
+      : `<button class="page-btn ${p===current?'active':''}" onclick="goPage(${p})">${p}</button>`
+  ).join('');
+  return `
+    <div class="pagination">
+      <button class="page-btn" ${current<=1?'disabled':''} onclick="goPage(${current-1})">‹</button>
+      ${btns}
+      <button class="page-btn" ${current>=total?'disabled':''} onclick="goPage(${current+1})">›</button>
+    </div>`;
+}
+
+function goPage(p) {
+  state.page = p;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  render();
+}
+
+// ── INIT ──
+loadMenus();
+render();
+</script>
+</body>
+</html>

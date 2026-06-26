@@ -5,776 +5,871 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PhimHay – Xem Phim Online</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
-
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.vidstack.io/player/theme.css">
 <link rel="stylesheet" href="https://cdn.vidstack.io/player/video.css">
-
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0a0a0f;--surface:#12121a;--card:#1a1a26;--border:#252535;
-  --accent:#e8173a;--gold:#f5c518;--text:#e8e8f0;--muted:#6a6a8a;
-  --nav-h:56px;--r:8px;
+  --accent:#e8173a;--gold:#f5c518;--r:8px;
   --fh:'Oswald',sans-serif;--fb:'Be Vietnam Pro',sans-serif;
+  color-scheme:dark;
+  --bg:#0a0a0f;--sur:#12121a;--card:#1a1a26;--bdr:#252535;
+  --txt:#e8e8f0;--mut:#6a6a8a;--nav-bg:rgba(10,10,15,.96);
+  --cov:rgba(10,10,15,.65);--shad:rgba(0,0,0,.6);
+  --hg:linear-gradient(100deg,rgba(10,10,15,.95) 0%,rgba(10,10,15,.55) 45%,rgba(10,10,15,.05) 100%);
+  --dg:linear-gradient(0deg,#0a0a0f 0%,rgba(10,10,15,.4) 60%,transparent 100%);
+}
+@media(prefers-color-scheme:light){
+  :root{
+    color-scheme:light;
+    --bg:#f0f0f5;--sur:#fff;--card:#fff;--bdr:#dddde8;
+    --txt:#18182e;--mut:#7878a0;--nav-bg:rgba(240,240,245,.97);
+    --cov:rgba(10,10,15,.5);--shad:rgba(0,0,0,.1);
+    --hg:linear-gradient(100deg,rgba(240,240,245,.97) 0%,rgba(240,240,245,.6) 45%,rgba(240,240,245,.02) 100%);
+    --dg:linear-gradient(0deg,#f0f0f5 0%,rgba(240,240,245,.5) 55%,transparent 100%);
+  }
+  .card{box-shadow:0 1px 6px rgba(0,0,0,.07)!important}
+  .card:hover{box-shadow:0 10px 28px var(--shad)!important}
+  .be{background:rgba(245,197,24,.15)!important;border-color:rgba(245,197,24,.4)!important}
+  .mtag{background:rgba(0,0,0,.06)!important;border-color:var(--bdr)!important;color:var(--txt)!important}
+  .dd-menu,.drawer{box-shadow:0 8px 32px rgba(0,0,0,.15)!important}
 }
 html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:var(--fb);font-size:14px;line-height:1.6;min-height:100vh}
+body{background:var(--bg);color:var(--txt);font-family:var(--fb);font-size:14px;line-height:1.6;min-height:100vh}
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-a{color:inherit;text-decoration:none}
+::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:3px}
 button{font-family:var(--fb);cursor:pointer;border:none;background:none}
 img{display:block}
 
-/* ── NAV ── */
+/* ══ NAV ══ */
 #nav{
-  position:sticky;top:0;z-index:200;height:var(--nav-h);
-  background:rgba(10,10,15,.96);backdrop-filter:blur(16px);
-  border-bottom:1px solid var(--border);
-  display:flex;align-items:center;gap:12px;padding:0 20px;
+  position:sticky;top:0;z-index:400;
+  background:var(--nav-bg);backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--bdr);
+  padding:0 20px;display:flex;flex-direction:column;
 }
-.logo{font-family:var(--fh);font-size:20px;font-weight:700;color:var(--accent);cursor:pointer;white-space:nowrap;letter-spacing:.5px}
-.logo em{color:var(--text);font-style:normal}
-.search-box{flex:1;max-width:400px;position:relative}
-.search-box input{
-  width:100%;background:var(--card);border:1px solid var(--border);
-  border-radius:20px;padding:7px 40px 7px 36px;
-  color:var(--text);font-family:var(--fb);font-size:13px;outline:none;
-  transition:border-color .2s
+.nav-top{display:flex;align-items:center;gap:12px;height:52px}
+.nav-bot{
+  display:flex;align-items:center;gap:1px;
+  height:38px;border-top:1px solid var(--bdr);
+  overflow-x:auto;scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;
 }
-.search-box input:focus{border-color:var(--accent)}
-.search-box input::placeholder{color:var(--muted)}
-.search-box .si">.search-box .si{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;font-size:14px}
-.search-box .sb{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:var(--accent);color:#fff;border-radius:14px;padding:3px 10px;font-size:11px;font-weight:700}
-.nav-menu{display:flex;gap:2px;align-items:center;overflow-x:auto;scrollbar-width:none}
-.nav-menu::-webkit-scrollbar{display:none}
-.nm-btn{color:var(--muted);font-size:13px;font-weight:500;padding:5px 11px;border-radius:6px;white-space:nowrap;transition:color .15s,background .15s}
-.nm-btn:hover,.nm-btn.act{color:var(--text);background:var(--card)}
-.nm-btn.act{color:var(--accent)}
+.nav-bot::-webkit-scrollbar{display:none}
+/* dropdowns in nav must not shrink */
+.nav-bot .dd{flex-shrink:0}
+.logo{font-family:var(--fh);font-size:22px;font-weight:700;color:var(--accent);cursor:pointer;white-space:nowrap;flex-shrink:0}
+.logo em{color:var(--txt);font-style:normal}
+.sb-wrap{flex:1;max-width:500px;position:relative}
+.sb-wrap input{
+  width:100%;background:var(--card);border:1px solid var(--bdr);
+  border-radius:22px;padding:8px 50px 8px 38px;
+  color:var(--txt);font-family:var(--fb);font-size:13px;outline:none;transition:border-color .2s;
+}
+.sb-wrap input:focus{border-color:var(--accent)}
+.sb-wrap input::placeholder{color:var(--mut)}
+.sb-wrap .s-ic{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--mut);pointer-events:none;font-size:15px}
+.sb-wrap .s-btn{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:var(--accent);color:#fff;border-radius:16px;padding:4px 14px;font-size:12px;font-weight:700}
+.nb{color:var(--mut);font-size:13px;font-weight:500;padding:4px 11px;border-radius:6px;white-space:nowrap;transition:color .15s,background .15s;height:30px;display:flex;align-items:center;flex-shrink:0}
+.nb:hover,.nb.act{color:var(--txt);background:var(--card)}
+.nb.act{color:var(--accent)}
+.nsep{width:1px;height:14px;background:var(--bdr);flex-shrink:0;margin:0 3px}
 
-/* dropdown */
+/* dropdown desktop */
 .dd{position:relative}
 .dd-menu{
-  display:none;position:absolute;top:calc(100% + 10px);left:0;
-  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
-  padding:8px;min-width:220px;z-index:300;
-  box-shadow:0 20px 60px rgba(0,0,0,.7);max-height:70vh;overflow-y:auto
+  display:none;position:fixed;min-width:260px;
+  background:var(--sur);border:1px solid var(--bdr);border-radius:var(--r);
+  padding:8px;z-index:500;box-shadow:0 20px 60px rgba(0,0,0,.7);
+  max-height:70vh;overflow-y:auto;
+  /* position is set via JS below */
 }
 .dd.open .dd-menu{display:block}
-.dd-menu-inner{display:grid;grid-template-columns:1fr 1fr;gap:2px}
-.dd-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--accent);padding:4px 10px 6px;grid-column:span 2;border-bottom:1px solid var(--border);margin-bottom:4px}
-.dd-item{padding:7px 10px;border-radius:5px;color:var(--muted);font-size:12px;cursor:pointer;transition:color .15s,background .15s}
-.dd-item:hover{color:var(--text);background:var(--card)}
+.dmi{display:grid;grid-template-columns:1fr 1fr;gap:2px}
+.d-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--accent);padding:4px 10px 6px;grid-column:span 2;border-bottom:1px solid var(--bdr);margin-bottom:4px}
+.d-all{grid-column:span 2!important;color:var(--accent)!important;font-weight:600;border-bottom:1px solid var(--bdr);margin-bottom:4px;padding-bottom:8px!important}
+.d-it{padding:7px 10px;border-radius:5px;color:var(--mut);font-size:12px;cursor:pointer;transition:color .15s,background .15s}
+.d-it:hover{color:var(--txt);background:var(--card)}
 
-/* ── LAYOUT ── */
+/* ══ MOBILE DRAWER ══ */
+#drawer-overlay{
+  display:none;position:fixed;inset:0;z-index:600;
+  background:rgba(0,0,0,.6);backdrop-filter:blur(4px);
+}
+#drawer-overlay.open{display:block}
+.drawer{
+  position:fixed;top:0;right:0;bottom:0;width:min(320px,90vw);z-index:700;
+  background:var(--sur);border-left:1px solid var(--bdr);
+  overflow-y:auto;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);
+  display:flex;flex-direction:column;
+}
+.drawer.open{transform:translateX(0)}
+.drawer-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 18px;border-bottom:1px solid var(--bdr);flex-shrink:0;
+}
+.drawer-head h3{font-family:var(--fh);font-size:18px;font-weight:600}
+.drawer-close{width:34px;height:34px;border-radius:50%;background:var(--card);border:1px solid var(--bdr);color:var(--mut);font-size:18px;display:flex;align-items:center;justify-content:center}
+.drawer-tabs{display:flex;gap:6px;padding:12px 18px;border-bottom:1px solid var(--bdr);flex-shrink:0}
+.dtab{flex:1;padding:7px;border-radius:6px;font-size:13px;font-weight:600;color:var(--mut);border:1px solid var(--bdr);text-align:center;transition:all .15s}
+.dtab.act{background:var(--accent);border-color:var(--accent);color:#fff}
+.drawer-list{padding:10px 12px;flex:1}
+.drawer-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.d-pill{
+  padding:8px 10px;border-radius:6px;font-size:13px;font-weight:500;
+  color:var(--txt);background:var(--card);border:1px solid var(--bdr);
+  cursor:pointer;text-align:center;transition:all .15s;
+}
+.d-pill:hover{border-color:var(--accent);color:var(--accent)}
+.d-pill.act{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* ══ MOBILE BOTTOM NAV ══ */
+#mob-nav{
+  display:none;position:fixed;bottom:0;left:0;right:0;z-index:300;
+  background:var(--nav-bg);backdrop-filter:blur(16px);
+  border-top:1px solid var(--bdr);
+  height:56px;align-items:center;justify-content:space-around;
+}
+.mn-btn{
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  color:var(--mut);font-size:10px;font-weight:500;padding:5px 10px;
+  border-radius:8px;min-width:52px;transition:color .15s;
+}
+.mn-btn .mi{font-size:22px;line-height:1}
+.mn-btn.act,.mn-btn:hover{color:var(--accent)}
+
+/* ══ LAYOUT ══ */
 #app{max-width:1380px;margin:0 auto;padding:0 16px 60px}
 
-/* ── HERO ── */
+/* ══ HERO ══ */
 .hero{
-  margin:20px 0 32px;border-radius:12px;overflow:hidden;
-  position:relative;height:min(46vw,360px);background:var(--card);cursor:pointer
+  margin:18px 0 28px;border-radius:12px;overflow:hidden;
+  position:relative;height:min(44vw,350px);background:var(--card);cursor:pointer;
 }
-.hero-img{width:100%;height:100%;object-fit:cover;transition:transform .5s}
-.hero:hover .hero-img{transform:scale(1.03)}
-.hero-grad{
-  position:absolute;inset:0;
-  background:linear-gradient(100deg,rgba(10,10,15,.95) 0%,rgba(10,10,15,.6) 45%,rgba(10,10,15,.1) 100%)
-}
-.hero-body{position:absolute;inset:0;display:flex;align-items:center;padding:28px 40px}
-.hero-inner{max-width:460px}
-.hero-badge{display:inline-block;background:var(--accent);color:#fff;font-size:9px;font-weight:700;letter-spacing:1.5px;padding:3px 9px;border-radius:4px;text-transform:uppercase;margin-bottom:10px}
-.hero-title{font-family:var(--fh);font-size:clamp(18px,3.2vw,38px);font-weight:700;line-height:1.1;margin-bottom:6px}
-.hero-orig{color:var(--muted);font-size:12px;margin-bottom:10px}
-.hero-meta{display:flex;gap:10px;align-items:center;font-size:12px;color:var(--muted);flex-wrap:wrap;margin-bottom:14px}
-.hero-meta .star{color:var(--gold)}
-.mtag{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:4px;padding:2px 8px;font-size:11px;color:var(--text)}
-.hero-desc{font-size:12px;color:#9a9ab8;line-height:1.75;margin-bottom:16px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.hero-btns{display:flex;gap:8px}
+.hero img{width:100%;height:100%;object-fit:cover;transition:transform .5s}
+.hero:hover img{transform:scale(1.03)}
+.h-grad{position:absolute;inset:0;background:var(--hg)}
+.h-body{position:absolute;inset:0;display:flex;align-items:center;padding:28px 40px}
+.h-inner{max-width:440px}
+.h-badge{display:inline-block;background:var(--accent);color:#fff;font-size:9px;font-weight:700;letter-spacing:1.5px;padding:3px 9px;border-radius:4px;text-transform:uppercase;margin-bottom:10px}
+.h-title{font-family:var(--fh);font-size:clamp(16px,3vw,36px);font-weight:700;line-height:1.1;margin-bottom:4px}
+.h-orig{color:var(--mut);font-size:12px;margin-bottom:10px}
+.h-meta{display:flex;gap:10px;align-items:center;font-size:12px;color:var(--mut);flex-wrap:wrap;margin-bottom:14px}
+.h-meta .star{color:var(--gold)}
+.mtag{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:4px;padding:2px 8px;font-size:11px;color:var(--txt)}
+.h-btns{display:flex;gap:8px}
 .btn-play{background:var(--accent);color:#fff;padding:9px 22px;border-radius:var(--r);font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px;transition:background .2s,transform .15s}
 .btn-play:hover{background:#c41230;transform:translateY(-1px)}
-.btn-more{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);color:#fff;padding:9px 18px;border-radius:var(--r);font-size:13px;font-weight:500;transition:background .2s}
+.btn-more{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);color:#fff;padding:9px 18px;border-radius:var(--r);font-size:13px;transition:background .2s}
 .btn-more:hover{background:rgba(255,255,255,.2)}
 
-/* ── SECTION ── */
-.sec{margin-bottom:36px}
-.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border)}
-.sec-title{font-family:var(--fh);font-size:16px;font-weight:600;display:flex;align-items:center;gap:8px}
-.sec-title::before{content:'';display:inline-block;width:3px;height:18px;background:var(--accent);border-radius:2px}
-.see-all{color:var(--muted);font-size:12px;border:1px solid var(--border);padding:4px 12px;border-radius:14px;transition:color .15s,border-color .15s}
+/* ══ SECTION ══ */
+.sec{margin-bottom:32px}
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--bdr)}
+.sec-ttl{font-family:var(--fh);font-size:16px;font-weight:600;display:flex;align-items:center;gap:8px}
+.sec-ttl::before{content:'';display:inline-block;width:3px;height:18px;background:var(--accent);border-radius:2px}
+.see-all{color:var(--mut);font-size:12px;border:1px solid var(--bdr);padding:4px 12px;border-radius:14px;transition:color .15s,border-color .15s}
 .see-all:hover{color:var(--accent);border-color:var(--accent)}
 
-/* ── GRID ── */
+/* ══ GRID ══ */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
 .card{border-radius:var(--r);overflow:hidden;background:var(--card);cursor:pointer;transition:transform .2s,box-shadow .2s}
-.card:hover{transform:translateY(-4px);box-shadow:0 12px 36px rgba(0,0,0,.6)}
+.card:hover{transform:translateY(-4px);box-shadow:0 12px 36px var(--shad)}
 .card:hover .cover img{transform:scale(1.07)}
 .card:hover .cov-ov{opacity:1}
-.cover{position:relative;aspect-ratio:2/3;overflow:hidden;background:var(--surface)}
+.cover{position:relative;aspect-ratio:2/3;overflow:hidden;background:var(--sur)}
 .cover img{width:100%;height:100%;object-fit:cover;transition:transform .3s}
-.cov-ov{position:absolute;inset:0;background:rgba(10,10,15,.65);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s}
-.play-circle{width:44px;height:44px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;box-shadow:0 4px 18px rgba(232,23,58,.5)}
+.cov-ov{position:absolute;inset:0;background:var(--cov);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s}
+.pc{width:44px;height:44px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;box-shadow:0 4px 18px rgba(232,23,58,.5)}
 .cbadges{position:absolute;top:6px;left:6px;display:flex;flex-direction:column;gap:3px}
 .cbadge{font-size:9px;font-weight:700;letter-spacing:.8px;padding:2px 6px;border-radius:3px;text-transform:uppercase}
 .bq{background:var(--accent);color:#fff}
 .be{background:rgba(0,0,0,.8);color:var(--gold);border:1px solid rgba(245,197,24,.25)}
-.cinfo{padding:8px 10px}
+.ci{padding:8px 10px}
 .ctitle{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
-.csub{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.csub{font-size:11px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-/* ── CHIPS ── */
-.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
-.chip{background:var(--card);border:1px solid var(--border);color:var(--muted);font-size:12px;font-weight:500;padding:5px 14px;border-radius:16px;cursor:pointer;transition:all .15s}
-.chip:hover{color:var(--text);border-color:var(--muted)}
+/* ══ CHIPS / PILLS ══ */
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+/* On desktop the nav-bot already has these links — hide chips to avoid duplicate */
+@media(min-width:701px){.chips{display:none}}
+.chip{background:var(--card);border:1px solid var(--bdr);color:var(--mut);font-size:12px;font-weight:500;padding:5px 14px;border-radius:16px;cursor:pointer;transition:all .15s}
+.chip:hover{color:var(--txt);border-color:var(--mut)}
 .chip.act{background:var(--accent);border-color:var(--accent);color:#fff}
 
-/* ── PAGE HEAD ── */
-.pg-head{padding-top:20px}
-.pg-title{font-family:var(--fh);font-size:22px;font-weight:700;margin-bottom:6px}
-.pg-sub{color:var(--muted);font-size:13px;margin-bottom:18px}
+/* browse hero */
+.br-hero{
+  margin:18px 0 0;border-radius:12px;overflow:hidden;position:relative;
+  height:140px;background:var(--card);display:flex;align-items:flex-end;padding:18px 24px;
+}
+.br-hero-bg{position:absolute;inset:0;background:linear-gradient(135deg,var(--accent) 0%,#7c0a1e 100%);opacity:.15}
+.br-hero-ttl{position:relative;font-family:var(--fh);font-size:26px;font-weight:700}
+.br-hero-sub{position:relative;color:var(--mut);font-size:13px;margin-top:2px}
+.pill-grid{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0 20px}
+.pill{background:var(--card);border:1px solid var(--bdr);color:var(--txt);font-size:12px;font-weight:500;padding:6px 14px;border-radius:20px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.pill:hover{border-color:var(--accent);color:var(--accent)}
+.pill.act{background:var(--accent);border-color:var(--accent);color:#fff}
 
-/* ── PAGINATION ── */
+/* ══ PAGINATION ══ */
 .pages{display:flex;justify-content:center;gap:5px;margin-top:28px;flex-wrap:wrap}
-.pg{background:var(--card);border:1px solid var(--border);color:var(--muted);width:34px;height:34px;border-radius:6px;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .15s}
-.pg:hover{color:var(--text);border-color:var(--muted)}
+.pg{background:var(--card);border:1px solid var(--bdr);color:var(--mut);width:34px;height:34px;border-radius:6px;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.pg:hover{color:var(--txt);border-color:var(--mut)}
 .pg.act{background:var(--accent);border-color:var(--accent);color:#fff}
 .pg:disabled{opacity:.35;cursor:not-allowed}
 
-/* ── WATCH PAGE ── */
-.watch-layout{display:grid;grid-template-columns:1fr 280px;gap:20px;padding-top:16px}
-@media(max-width:900px){.watch-layout{grid-template-columns:1fr}}
-.watch-main{}
-.watch-back{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:13px;margin-bottom:12px;cursor:pointer;width:fit-content;transition:color .15s}
-.watch-back:hover{color:var(--text)}
-.player-wrap{border-radius:10px;overflow:hidden;background:#000;aspect-ratio:16/9;position:relative}
+/* ══ WATCH ══ */
+.wl{display:grid;grid-template-columns:1fr 280px;gap:20px;padding-top:16px}
+@media(max-width:900px){.wl{grid-template-columns:1fr}}
+.w-back{display:flex;align-items:center;gap:6px;color:var(--mut);font-size:13px;margin-bottom:12px;cursor:pointer;width:fit-content;transition:color .15s}
+.w-back:hover{color:var(--txt)}
+.player-wrap{border-radius:10px;overflow:hidden;background:#000;aspect-ratio:16/9}
 media-player{width:100%;height:100%}
-
-/* server tabs */
-.server-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 10px}
-.stab{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:5px 14px;border-radius:6px;font-size:12px;font-weight:500;transition:all .15s}
-.stab:hover{color:var(--text);border-color:var(--muted)}
+.stabs{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 8px}
+.stab{background:var(--card);border:1px solid var(--bdr);color:var(--mut);padding:5px 14px;border-radius:6px;font-size:12px;font-weight:500;transition:all .15s}
+.stab:hover{color:var(--txt);border-color:var(--mut)}
 .stab.act{background:rgba(232,23,58,.15);border-color:var(--accent);color:var(--accent)}
-
-/* episode list */
-.ep-scroll{display:flex;gap:6px;flex-wrap:wrap;max-height:200px;overflow-y:auto;padding-right:4px}
-.ep-btn{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:6px 4px;border-radius:5px;font-size:11px;font-weight:600;min-width:50px;text-align:center;transition:all .15s}
-.ep-btn:hover{color:var(--text);border-color:var(--muted)}
+.ep-scroll{display:flex;gap:6px;flex-wrap:wrap;max-height:190px;overflow-y:auto;padding:2px}
+.ep-btn{background:var(--card);border:1px solid var(--bdr);color:var(--mut);padding:6px 4px;border-radius:5px;font-size:11px;font-weight:600;min-width:50px;text-align:center;transition:all .15s}
+.ep-btn:hover{color:var(--txt);border-color:var(--mut)}
 .ep-btn.act{background:var(--accent);border-color:var(--accent);color:#fff}
-
-/* watch info */
-.watch-title{font-family:var(--fh);font-size:22px;font-weight:700;margin:14px 0 4px;line-height:1.2}
-.watch-orig{color:var(--muted);font-size:13px;margin-bottom:10px}
-.watch-meta{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-bottom:12px;align-items:center}
-.watch-desc{font-size:13px;color:#9a9ab8;line-height:1.8;margin-bottom:16px}
-.watch-cast{font-size:12px;color:var(--muted);line-height:1.8}
-.watch-cast span{color:var(--text)}
-
-/* sidebar */
-.watch-side{}
-.side-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:10px}
-.side-list{display:flex;flex-direction:column;gap:10px}
-.side-card{display:grid;grid-template-columns:64px 1fr;gap:8px;cursor:pointer;border-radius:6px;padding:6px;transition:background .15s}
+.w-title{font-family:var(--fh);font-size:22px;font-weight:700;margin:14px 0 4px;line-height:1.2}
+.w-orig{color:var(--mut);font-size:13px;margin-bottom:10px}
+.w-meta{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--mut);margin-bottom:10px;align-items:center}
+.w-desc{font-size:13px;color:#9a9ab8;line-height:1.8;margin-bottom:12px}
+.w-cast{font-size:12px;color:var(--mut);line-height:1.8}
+.w-cast span{color:var(--txt)}
+.w-side .side-ttl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--mut);margin-bottom:10px}
+.side-list{display:flex;flex-direction:column;gap:8px}
+.side-card{display:grid;grid-template-columns:62px 1fr;gap:8px;cursor:pointer;border-radius:6px;padding:6px;transition:background .15s}
 .side-card:hover{background:var(--card)}
-.side-thumb{border-radius:4px;overflow:hidden;aspect-ratio:2/3;background:var(--surface)}
+.side-thumb{border-radius:4px;overflow:hidden;aspect-ratio:2/3;background:var(--sur)}
 .side-thumb img{width:100%;height:100%;object-fit:cover}
 .side-info{display:flex;flex-direction:column;justify-content:center;gap:2px;min-width:0}
 .side-name{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.side-sub{font-size:11px;color:var(--muted)}
+.side-sub{font-size:11px;color:var(--mut)}
+.sub-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--mut);margin-bottom:8px;margin-top:14px}
 
-/* ── DETAIL PAGE ── */
-.detail-layout{padding-top:20px}
-.detail-hero{
-  position:relative;border-radius:12px;overflow:hidden;
-  height:min(42vw,320px);background:var(--card);margin-bottom:0
-}
-.detail-hero img{width:100%;height:100%;object-fit:cover}
-.detail-hero-grad{position:absolute;inset:0;background:linear-gradient(0deg,var(--bg) 0%,rgba(10,10,15,.4) 60%,transparent 100%)}
-.detail-body{display:grid;grid-template-columns:200px 1fr;gap:24px;margin-top:-80px;position:relative;z-index:1;padding:0 4px}
-@media(max-width:600px){.detail-body{grid-template-columns:1fr;margin-top:0}}
-.detail-poster{border-radius:var(--r);overflow:hidden;aspect-ratio:2/3;border:3px solid var(--border);flex-shrink:0;background:var(--surface)}
-.detail-poster img{width:100%;height:100%;object-fit:cover}
-.detail-info{padding-top:88px}
-@media(max-width:600px){.detail-info{padding-top:0}}
-.detail-title{font-family:var(--fh);font-size:clamp(18px,3vw,32px);font-weight:700;line-height:1.2;margin-bottom:4px}
-.detail-orig{color:var(--muted);font-size:13px;margin-bottom:12px}
-.detail-meta{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-bottom:14px;align-items:center}
-.detail-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
-.dtag{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:3px 10px;font-size:11px;cursor:pointer;transition:border-color .15s,color .15s}
+/* ══ DETAIL ══ */
+.dl{padding-top:18px}
+.dh{position:relative;border-radius:12px;overflow:hidden;height:min(40vw,300px);background:var(--card)}
+.dh img{width:100%;height:100%;object-fit:cover}
+.dh-grad{position:absolute;inset:0;background:var(--dg)}
+.db{display:grid;grid-template-columns:190px 1fr;gap:24px;margin-top:-70px;position:relative;z-index:1;padding:0 4px}
+@media(max-width:600px){.db{grid-template-columns:1fr;margin-top:0}}
+.d-poster{border-radius:var(--r);overflow:hidden;aspect-ratio:2/3;border:3px solid var(--bdr);background:var(--sur);flex-shrink:0}
+.d-poster img{width:100%;height:100%;object-fit:cover}
+.d-info{padding-top:80px}
+@media(max-width:600px){.d-info{padding-top:0}}
+.d-title{font-family:var(--fh);font-size:clamp(18px,3vw,30px);font-weight:700;line-height:1.2;margin-bottom:4px}
+.d-orig{color:var(--mut);font-size:13px;margin-bottom:10px}
+.d-meta{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--mut);margin-bottom:12px;align-items:center}
+.d-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.dtag{background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:3px 10px;font-size:11px;cursor:pointer;transition:all .15s}
 .dtag:hover{border-color:var(--accent);color:var(--accent)}
-.detail-desc{font-size:13px;color:#9a9ab8;line-height:1.8;margin-bottom:20px}
-.detail-eps{margin-top:24px}
-.det-sub{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:10px}
+.d-desc{font-size:13px;color:#9a9ab8;line-height:1.8;margin-bottom:16px}
+.d-eps{margin-top:20px}
 
-/* ── MISC ── */
-.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .75s linear infinite;margin:60px auto}
+/* ══ MISC ══ */
+.spinner{width:36px;height:36px;border:3px solid var(--bdr);border-top-color:var(--accent);border-radius:50%;animation:spin .75s linear infinite;margin:70px auto}
 @keyframes spin{to{transform:rotate(360deg)}}
-.empty{text-align:center;padding:60px 0;color:var(--muted)}
+.empty{text-align:center;padding:70px 0;color:var(--mut)}
 .empty .ei{font-size:36px;margin-bottom:12px}
-.empty p{font-size:13px}
+.pg-pad{padding-top:18px}
 
-@media(max-width:600px){
+/* ══ RESPONSIVE ══ */
+/* Portrait mobile: hide nav-bot, show bottom nav */
+@media(max-width:700px) and (orientation:portrait){
   #nav{padding:0 12px}
-  #app{padding:0 10px 40px}
+  .nav-bot{display:none!important}
+  .nav-top{height:48px}
+  #app{padding:0 10px 72px}
   .hero{height:54vw}
-  .hero-body{padding:16px 18px}
-  .hero-desc{display:none}
+  .h-body{padding:12px 16px}
   .grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
-  .nav-menu{display:none}
+  .br-hero{height:100px;padding:12px 16px}
+  .br-hero-ttl{font-size:20px}
+  .wl{padding-top:10px}
+  #mob-nav{display:flex}
+  .chips{display:flex!important}
+}
+/* Landscape mobile / small tablet: show nav-bot, hide bottom nav, hide chips */
+@media(max-width:700px) and (orientation:landscape){
+  #nav{padding:0 12px}
+  .nav-top{height:44px}
+  .nav-bot{height:34px}
+  #app{padding:0 10px 20px}
+  .hero{height:38vw}
+  .h-body{padding:10px 14px}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+  #mob-nav{display:none}
+  .chips{display:none!important}
+}
+/* Tablet portrait ~700-900px: show both but chips hidden */
+@media(min-width:701px) and (max-width:900px){
+  .grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+  #mob-nav{display:none}
 }
 </style>
 </head>
 <body>
 
+<!-- NAV -->
 <nav id="nav">
-  <div class="logo" onclick="go('home')">PHIM<em>HAY</em></div>
-
-  <div class="search-box">
-    <span class="si">🔍</span>
-    <input id="si" type="text" placeholder="Tìm phim, diễn viên..." onkeydown="if(event.key==='Enter')doSearch()">
-    <button class="sb" onclick="doSearch()">Tìm</button>
+  <div class="nav-top">
+    <div class="logo" onclick="go('home')">PHIM<em>HAY</em></div>
+    <div class="sb-wrap">
+      <span class="s-ic">🔍</span>
+      <input id="s-inp" type="text" placeholder="Tìm phim, diễn viên..." onkeydown="if(event.key==='Enter')doSearch()">
+      <button class="s-btn" onclick="doSearch()">Tìm</button>
+    </div>
   </div>
-
-  <nav class="nav-menu">
-    <button class="nm-btn" id="nb-home" onclick="go('home')">Trang chủ</button>
-    <button class="nm-btn" id="nb-phim-bo" onclick="go('list','phim-bo')">Phim Bộ</button>
-    <button class="nm-btn" id="nb-phim-le" onclick="go('list','phim-le')">Phim Lẻ</button>
-    <button class="nm-btn" id="nb-hoat-hinh" onclick="go('list','hoat-hinh')">Hoạt Hình</button>
-    <button class="nm-btn" id="nb-tv-shows" onclick="go('list','tv-shows')">TV Shows</button>
-
+  <div class="nav-bot">
+    <button class="nb" id="nb-home" onclick="go('home')">Trang chủ</button>
+    <div class="nsep"></div>
+    <button class="nb" id="nb-phim-bo" onclick="go('list','phim-bo')">Phim Bộ</button>
+    <button class="nb" id="nb-phim-le" onclick="go('list','phim-le')">Phim Lẻ</button>
+    <button class="nb" id="nb-hoat-hinh" onclick="go('list','hoat-hinh')">Hoạt Hình</button>
+    <button class="nb" id="nb-tv-shows" onclick="go('list','tv-shows')">TV Shows</button>
+    <button class="nb" id="nb-phim-vietsub" onclick="go('list','phim-vietsub')">Vietsub</button>
+    <button class="nb" id="nb-phim-long-tieng" onclick="go('list','phim-long-tieng')">Lồng Tiếng</button>
+    <div class="nsep"></div>
     <div class="dd" id="ddTL">
-      <button class="nm-btn" onclick="toggleDD('ddTL')">Thể Loại ▾</button>
+      <button class="nb" id="nb-browse-genre" onclick="toggleDD('ddTL')">Thể Loại ▾</button>
       <div class="dd-menu">
-        <div class="dd-menu-inner" id="tlList"><div class="dd-lbl" style="grid-column:span 2">Thể Loại</div></div>
+        <div class="dmi" id="tl-list">
+          <div class="d-lbl">Thể Loại</div>
+          <div class="d-it d-all" onclick="closeDD();go('browse-genre','')">📋 Tất cả thể loại</div>
+        </div>
       </div>
     </div>
-
     <div class="dd" id="ddQG">
-      <button class="nm-btn" onclick="toggleDD('ddQG')">Quốc Gia ▾</button>
+      <button class="nb" id="nb-browse-country" onclick="toggleDD('ddQG')">Quốc Gia ▾</button>
       <div class="dd-menu">
-        <div class="dd-menu-inner" id="qgList"><div class="dd-lbl" style="grid-column:span 2">Quốc Gia</div></div>
+        <div class="dmi" id="qg-list">
+          <div class="d-lbl">Quốc Gia</div>
+          <div class="d-it d-all" onclick="closeDD();go('browse-country','')">🌏 Tất cả quốc gia</div>
+        </div>
       </div>
     </div>
-  </nav>
+  </div>
 </nav>
+
+<!-- MOBILE BOTTOM NAV -->
+<div id="mob-nav">
+  <button class="mn-btn" id="mn-home" onclick="go('home')"><span class="mi">🏠</span>Trang chủ</button>
+  <button class="mn-btn" id="mn-list" onclick="go('list','phim-bo')"><span class="mi">📺</span>Phim</button>
+  <button class="mn-btn" onclick="openDrawer('genre')"><span class="mi">🎭</span>Thể Loại</button>
+  <button class="mn-btn" onclick="openDrawer('country')"><span class="mi">🌏</span>Quốc Gia</button>
+  <button class="mn-btn" onclick="document.getElementById('s-inp').focus();scrollTo(0,0)"><span class="mi">🔍</span>Tìm kiếm</button>
+</div>
+
+<!-- MOBILE DRAWER -->
+<div id="drawer-overlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-head">
+    <h3 id="drawer-title">Thể Loại</h3>
+    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+  </div>
+  <div class="drawer-tabs">
+    <button class="dtab act" id="dtab-genre" onclick="switchDrawerTab('genre')">Thể Loại</button>
+    <button class="dtab" id="dtab-country" onclick="switchDrawerTab('country')">Quốc Gia</button>
+  </div>
+  <div class="drawer-list">
+    <div class="drawer-grid" id="drawer-content"></div>
+  </div>
+</div>
 
 <div id="app"><div class="spinner"></div></div>
 
 <script type="module" src="https://cdn.vidstack.io/player"></script>
-
 <script>
 const API = 'https://phimapi.com';
-const PROXY_PREFIX = '/proxy-stream';
+let S = {view:'home',slug:'',si:0,ei:0,page:1,kw:''};
+let MC = {}; // movie cache
+let _genres = null, _countries = null;
 
-// ĐĂNG KÝ SERVICE WORKER CHẶN QUẢNG CÁO
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./service-worker.js')
-    .then(() => console.log('✅ Service Worker proxy streams đã kích hoạt thành công.'))
-    .catch(err => console.error('❌ Lỗi đăng ký Service Worker:', err));
+// ══ ROUTER ══
+function hashToS(h) {
+  const p = (h.replace('#','')||'home').split('/');
+  return {view:p[0]||'home', slug:p[1]?decodeURIComponent(p[1]):'', si:+p[2]||0, ei:+p[3]||0, page:1, kw:''};
 }
-
-// ── STATE ──
-let S = { view:'home', slug:'', serverIdx:0, epIdx:0, page:1, kw:'' };
-let movieCache = {}; 
-
-// ── HASH ROUTER ──
-function hashToState(hash) {
-  const parts = (hash.replace('#','')||'home').split('/');
-  const view = parts[0] || 'home';
-  return {
-    view,
-    slug: parts[1] || '',
-    serverIdx: parseInt(parts[2]||'0')||0,
-    epIdx: parseInt(parts[3]||'0')||0,
-    page: 1, kw: ''
-  };
+function sToHash(s) {
+  if(s.view==='home') return '#home';
+  if(s.view==='watch') return `#watch/${s.slug}/${s.si}/${s.ei}`;
+  return `#${s.view}/${s.slug}`;
 }
-function stateToHash(s) {
-  if (s.view === 'home') return '#home';
-  if (s.view === 'list') return `#list/${s.slug}`;
-  if (s.view === 'genre') return `#genre/${s.slug}`;
-  if (s.view === 'country') return `#country/${s.slug}`;
-  if (s.view === 'search') return `#search/${encodeURIComponent(s.kw)}`;
-  if (s.view === 'movie') return `#movie/${s.slug}`;
-  if (s.view === 'watch') return `#watch/${s.slug}/${s.serverIdx}/${s.epIdx}`;
-  return '#home';
-}
-function pushState(s, p=1) {
-  s.page = p;
-  S = s;
-  const hash = stateToHash(s);
-  if (location.hash !== hash) {
-    history.pushState(null, '', hash);
-  }
+function go(view,slug='',si=0,ei=0) {
+  S={view,slug,si,ei,page:1,kw:S.kw};
+  const h=sToHash(S);
+  if(location.hash!==h) history.pushState(null,'',h);
   render();
 }
-window.addEventListener('popstate', () => {
-  const s = hashToState(location.hash);
-  if (s.view === 'search') s.kw = decodeURIComponent(s.slug);
-  S = s; render();
-});
+function goPage(p){S.page=p;history.pushState(null,'',sToHash(S));scrollTo({top:0,behavior:'smooth'});render()}
+function doSearch(){const k=document.getElementById('s-inp').value.trim();if(!k)return;S={view:'search',slug:k,si:0,ei:0,page:1,kw:k};history.pushState(null,'',`#search/${encodeURIComponent(k)}`);render()}
+window.addEventListener('popstate',()=>{const s=hashToS(location.hash);if(s.view==='search')s.kw=decodeURIComponent(s.slug);S=s;render()});
 
-// ── HELPERS ──
-function go(view, slug='', serverIdx=0, epIdx=0, page=1) {
-  pushState({view, slug, serverIdx, epIdx, page, kw: S.kw});
-}
-function goPage(p) {
-  S.page = p;
-  history.pushState(null,'',stateToHash(S));
-  window.scrollTo({top:0,behavior:'smooth'});
-  render();
-}
-function doSearch() {
-  const kw = document.getElementById('si').value.trim();
-  if (!kw) return;
-  pushState({view:'search', slug: kw, serverIdx:0, epIdx:0, page:1, kw});
-}
-function toggleDD(id) {
-  const el = document.getElementById(id);
-  const was = el.classList.contains('open');
-  document.querySelectorAll('.dd').forEach(d=>d.classList.remove('open'));
-  if (!was) el.classList.add('open');
-}
-document.addEventListener('click', e => {
-  if (!e.target.closest('.dd')) document.querySelectorAll('.dd').forEach(d=>d.classList.remove('open'));
-});
+// ══ NAV UTILS ══
 function setNav(id) {
-  document.querySelectorAll('.nm-btn').forEach(b=>b.classList.remove('act'));
-  const el = document.getElementById(id);
-  if (el) el.classList.add('act');
+  document.querySelectorAll('.nb,.mn-btn').forEach(b=>b.classList.remove('act'));
+  if(id){const e=document.getElementById(id);if(e)e.classList.add('act')}
+  // mobile
+  const mv={'home':'mn-home','list':'mn-list','browse-genre':'mn-home','browse-country':'mn-home'};
+  const mid=mv[S.view]||'';
+  if(mid){const e=document.getElementById(mid);if(e)e.classList.add('act')}
 }
-
-async function api(url) {
-  try { const r = await fetch(url); if (!r.ok) throw 0; return await r.json(); }
-  catch { return null; }
-}
-
-function imgUrl(p) {
-  if (!p) return '';
-  return p.startsWith('http') ? p : `https://phimimg.com/${p}`;
-}
-function fallbackImg(e) {
-  e.target.style.display='none';
-}
-
-// ── INIT MENUS ──
-async function loadMenus() {
-  const [tl, qg] = await Promise.all([
-    api(`${API}/the-loai`),
-    api(`${API}/quoc-gia`)
-  ]);
-  if (tl?.data) {
-    const el = document.getElementById('tlList');
-    el.innerHTML = `<div class="dd-lbl" style="grid-column:span 2">Thể Loại</div>` +
-      tl.data.map(g=>`<div class="dd-item" onclick="go('genre','${g.slug}')">${g.name}</div>`).join('');
-  }
-  if (qg?.data) {
-    const el = document.getElementById('qgList');
-    el.innerHTML = `<div class="dd-lbl" style="grid-column:span 2">Quốc Gia</div>` +
-      qg.data.map(c=>`<div class="dd-item" onclick="go('country','${c.slug}')">${c.name}</div>`).join('');
+function toggleDD(id){
+  const ddEl=document.getElementById(id);
+  const was=ddEl.classList.contains('open');
+  closeDD();
+  if(!was){
+    ddEl.classList.add('open');
+    // Position the menu below the trigger button
+    const menu=ddEl.querySelector('.dd-menu');
+    const btn=ddEl.querySelector('.nb');
+    const rect=btn.getBoundingClientRect();
+    menu.style.top=(rect.bottom+4)+'px';
+    menu.style.left=Math.min(rect.left, window.innerWidth-270)+'px';
   }
 }
+function closeDD(){document.querySelectorAll('.dd').forEach(d=>d.classList.remove('open'))}
+document.addEventListener('click',e=>{if(!e.target.closest('.dd'))closeDD()});
 
-// ── RENDER ROUTER ──
-async function render() {
-  const app = document.getElementById('app');
-  app.innerHTML = '<div class="spinner"></div>';
-  document.querySelectorAll('.dd').forEach(d=>d.classList.remove('open'));
-  switch(S.view) {
-    case 'home':    setNav('nb-home');    await renderHome(); break;
-    case 'list':    setNav('nb-'+S.slug); await renderList(); break;
-    case 'genre':   setNav('');           await renderGenre(); break;
-    case 'country': setNav('');           await renderCountry(); break;
-    case 'search':  setNav('');           await renderSearch(); break;
-    case 'movie':   setNav('');           await renderMovie(); break;
-    case 'watch':   setNav('');           await renderWatch(); break;
+// ══ DRAWER (mobile) ══
+let _drawerTab='genre';
+async function openDrawer(tab){
+  _drawerTab=tab;
+  document.getElementById('drawer-overlay').classList.add('open');
+  document.getElementById('drawer').classList.add('open');
+  document.body.style.overflow='hidden';
+  // Switch to correct tab
+  document.getElementById('dtab-genre').classList.toggle('act',tab==='genre');
+  document.getElementById('dtab-country').classList.toggle('act',tab==='country');
+  // Load data if not yet available
+  if(tab==='genre'&&!_genres){
+    const d=await api(`${API}/the-loai`);
+    if(Array.isArray(d))_genres=d;
+  }
+  if(tab==='country'&&!_countries){
+    const d=await api(`${API}/quoc-gia`);
+    if(Array.isArray(d))_countries=d;
+  }
+  fillDrawer(tab);
+}
+function closeDrawer(){
+  document.getElementById('drawer-overlay').classList.remove('open');
+  document.getElementById('drawer').classList.remove('open');
+  document.body.style.overflow='';
+}
+async function switchDrawerTab(tab){
+  _drawerTab=tab;
+  document.getElementById('dtab-genre').classList.toggle('act',tab==='genre');
+  document.getElementById('dtab-country').classList.toggle('act',tab==='country');
+  if(tab==='genre'&&!_genres){
+    const d=await api(`${API}/the-loai`);
+    if(Array.isArray(d))_genres=d;
+  }
+  if(tab==='country'&&!_countries){
+    const d=await api(`${API}/quoc-gia`);
+    if(Array.isArray(d))_countries=d;
+  }
+  fillDrawer(tab);
+}
+function fillDrawer(tab){
+  const c=document.getElementById('drawer-content');
+  const list=tab==='genre'?_genres:_countries;
+  if(!list||!list.length){
+    c.innerHTML='<p style="color:var(--mut);font-size:12px;padding:10px">Đang tải...</p>';
+    return;
+  }
+  const allBtn=tab==='genre'
+    ?`<div class="d-pill" style="grid-column:span 2;background:rgba(232,23,58,.1);border-color:var(--accent);color:var(--accent)" onclick="closeDrawer();go('browse-genre','')">📋 Tất cả thể loại</div>`
+    :`<div class="d-pill" style="grid-column:span 2;background:rgba(232,23,58,.1);border-color:var(--accent);color:var(--accent)" onclick="closeDrawer();go('browse-country','')">🌏 Tất cả quốc gia</div>`;
+  const view=tab==='genre'?'genre':'country';
+  c.innerHTML=allBtn+list.map(x=>
+    `<div class="d-pill" onclick="closeDrawer();go('${view}','${x.slug}')">${x.name}</div>`
+  ).join('');
+}
+
+// ══ API ══
+async function api(url){
+  try{const r=await fetch(url);if(!r.ok)throw 0;return await r.json()}catch{return null}
+}
+function imgUrl(p){if(!p)return'';return p.startsWith('http')?p:`https://phimimg.com/${p}`}
+function noImg(e){e.target.style.display='none'}
+
+// ══ LOAD MENUS ══
+async function loadMenus(){
+  const [tl,qg]=await Promise.all([api(`${API}/the-loai`),api(`${API}/quoc-gia`)]);
+  // Both APIs return array directly (no .data wrapper)
+  if(Array.isArray(tl)){
+    _genres=tl;
+    const el=document.getElementById('tl-list');
+    if(el) el.innerHTML=
+      `<div class="d-lbl">Thể Loại</div>
+       <div class="d-it d-all" onclick="closeDD();go('browse-genre','')">📋 Tất cả thể loại</div>`+
+      tl.map(g=>`<div class="d-it" onclick="closeDD();go('genre','${g.slug}')">${g.name}</div>`).join('');
+  }
+  if(Array.isArray(qg)){
+    _countries=qg;
+    const el=document.getElementById('qg-list');
+    if(el) el.innerHTML=
+      `<div class="d-lbl">Quốc Gia</div>
+       <div class="d-it d-all" onclick="closeDD();go('browse-country','')">🌏 Tất cả quốc gia</div>`+
+      qg.map(c=>`<div class="d-it" onclick="closeDD();go('country','${c.slug}')">${c.name}</div>`).join('');
+  }
+  // If drawer is already open (user tapped fast), refill it now
+  if(document.getElementById('drawer')?.classList.contains('open')){
+    fillDrawer(_drawerTab);
   }
 }
 
-// ── HOME ──
-async function renderHome() {
-  const [newest, bo, le, anime] = await Promise.all([
+// ══ RENDER ROUTER ══
+async function render(){
+  const app=document.getElementById('app');
+  app.innerHTML='<div class="spinner"></div>';
+  closeDD();
+  const navMap={
+    home:'nb-home',
+    'phim-bo':'nb-phim-bo','phim-le':'nb-phim-le',
+    'hoat-hinh':'nb-hoat-hinh','tv-shows':'nb-tv-shows',
+    'phim-vietsub':'nb-phim-vietsub','phim-long-tieng':'nb-phim-long-tieng'
+  };
+  const nid = S.view==='list' ? navMap[S.slug]||'' :
+              S.view==='home' ? 'nb-home' :
+              S.view==='browse-genre' ? 'nb-browse-genre' :
+              S.view==='browse-country' ? 'nb-browse-country' : '';
+  setNav(nid);
+  switch(S.view){
+    case 'home':          await renderHome(); break;
+    case 'list':          await renderList(); break;
+    case 'genre':         await renderGenre(); break;
+    case 'country':       await renderCountry(); break;
+    case 'browse-genre':  await renderBrowse('genre'); break;
+    case 'browse-country':await renderBrowse('country'); break;
+    case 'search':        await renderSearch(); break;
+    case 'movie':         await renderMovie(); break;
+    case 'watch':         await renderWatch(); break;
+  }
+}
+
+// ══ HOME ══
+async function renderHome(){
+  const [nw,bo,le,ah]=await Promise.all([
     api(`${API}/danh-sach/phim-moi-cap-nhat-v3?page=1`),
     api(`${API}/v1/api/danh-sach/phim-bo?page=1`),
     api(`${API}/v1/api/danh-sach/phim-le?page=1`),
     api(`${API}/v1/api/danh-sach/hoat-hinh?page=1`),
   ]);
-  const newItems = newest?.items || [];
-  const hero = newItems[0];
-  const app = document.getElementById('app');
-  app.innerHTML = `
-    ${hero ? heroHtml(hero) : ''}
-    ${secHtml('🔥 Mới Cập Nhật', newItems.slice(1,13), 'list','phim-moi')}
-    ${secHtml('📺 Phim Bộ', bo?.data?.items?.slice(0,12)||[], 'list','phim-bo')}
-    ${secHtml('🎬 Phim Lẻ', le?.data?.items?.slice(0,12)||[], 'list','phim-le')}
-    ${secHtml('🎌 Hoạt Hình', anime?.data?.items?.slice(0,12)||[], 'list','hoat-hinh')}
-  `;
+  const ni=nw?.items||[];
+  document.getElementById('app').innerHTML=`
+    ${ni[0]?heroHtml(ni[0]):''}
+    ${sec('🔥 Mới Cập Nhật',ni.slice(1,13),'list','phim-moi')}
+    ${sec('📺 Phim Bộ',bo?.data?.items?.slice(0,12)||[],'list','phim-bo')}
+    ${sec('🎬 Phim Lẻ',le?.data?.items?.slice(0,12)||[],'list','phim-le')}
+    ${sec('🎌 Hoạt Hình',ah?.data?.items?.slice(0,12)||[],'list','hoat-hinh')}`;
 }
-
-function heroHtml(m) {
-  const t = imgUrl(m.thumb_url||m.poster_url);
-  return `
-  <div class="hero" onclick="go('movie','${m.slug}')">
-    <img class="hero-img" src="${t}" alt="${m.name}" onerror="fallbackImg(event)">
-    <div class="hero-grad"></div>
-    <div class="hero-body">
-      <div class="hero-inner">
-        <span class="hero-badge">Nổi Bật</span>
-        <div class="hero-title">${m.name}</div>
-        <div class="hero-orig">${m.origin_name||''}</div>
-        <div class="hero-meta">
-          <span class="star">★</span>
-          <span>${m.year||''}</span>
-          ${m.episode_current?`<span>${m.episode_current}</span>`:''}
-          <span class="mtag">${m.quality||'HD'}</span>
-        </div>
-        <div class="hero-btns">
-          <button class="btn-play" onclick="event.stopPropagation();go('movie','${m.slug}')">▶ Xem Ngay</button>
-          <button class="btn-more" onclick="event.stopPropagation();go('movie','${m.slug}')">Chi tiết</button>
-        </div>
+function heroHtml(m){
+  const t=imgUrl(m.thumb_url||m.poster_url);
+  return `<div class="hero" onclick="go('movie','${m.slug}')">
+    <img src="${t}" alt="${m.name}" onerror="noImg(event)">
+    <div class="h-grad"></div>
+    <div class="h-body"><div class="h-inner">
+      <span class="h-badge">Nổi Bật</span>
+      <div class="h-title">${m.name}</div>
+      <div class="h-orig">${m.origin_name||''}</div>
+      <div class="h-meta">
+        <span class="star">★</span><span>${m.year||''}</span>
+        ${m.episode_current?`<span>${m.episode_current}</span>`:''}
+        <span class="mtag">${m.quality||'HD'}</span>
       </div>
-    </div>
+      <div class="h-btns">
+        <button class="btn-play" onclick="event.stopPropagation();go('movie','${m.slug}')">▶ Xem Ngay</button>
+        <button class="btn-more" onclick="event.stopPropagation();go('movie','${m.slug}')">Chi tiết</button>
+      </div>
+    </div></div>
   </div>`;
 }
-
-function secHtml(title, items, nav, slug) {
-  if (!items.length) return '';
+function sec(title,items,nav,slug){
+  if(!items.length)return'';
   return `<div class="sec">
     <div class="sec-head">
-      <div class="sec-title">${title}</div>
+      <div class="sec-ttl">${title}</div>
       <button class="see-all" onclick="go('${nav}','${slug}')">Xem tất cả →</button>
     </div>
-    <div class="grid">${items.map(cardHtml).join('')}</div>
+    <div class="grid">${items.map(card).join('')}</div>
   </div>`;
 }
-
-function cardHtml(m) {
-  const t = imgUrl(m.thumb_url||m.poster_url);
+function card(m){
+  const t=imgUrl(m.thumb_url||m.poster_url);
   return `<div class="card" onclick="go('movie','${m.slug}')">
     <div class="cover">
-      <img src="${t}" alt="${m.name}" loading="lazy" onerror="fallbackImg(event)">
-      <div class="cov-ov"><div class="play-circle">▶</div></div>
+      <img src="${t}" alt="${m.name}" loading="lazy" onerror="noImg(event)">
+      <div class="cov-ov"><div class="pc">▶</div></div>
       <div class="cbadges">
         <span class="cbadge bq">${m.quality||'HD'}</span>
         ${m.episode_current?`<span class="cbadge be">${m.episode_current}</span>`:''}
       </div>
     </div>
-    <div class="cinfo">
+    <div class="ci">
       <div class="ctitle">${m.name}</div>
       <div class="csub">${m.origin_name||m.year||''}</div>
     </div>
   </div>`;
 }
 
-// ── LIST PAGE ──
-const TYPES = {
-  'phim-bo':'Phim Bộ','phim-le':'Phim Lẻ','tv-shows':'TV Shows',
-  'hoat-hinh':'Hoạt Hình','phim-vietsub':'Vietsub','phim-thuyet-minh':'Thuyết Minh',
-  'phim-long-tieng':'Lồng Tiếng','phim-moi':'Mới Cập Nhật'
-};
-const TYPE_LIST = ['phim-bo','phim-le','tv-shows','hoat-hinh','phim-vietsub','phim-thuyet-minh','phim-long-tieng'];
-
-async function renderList() {
-  let items=[], total=0, titleName = TYPES[S.slug]||S.slug;
-  if (S.slug === 'phim-moi') {
-    const d = await api(`${API}/danh-sach/phim-moi-cap-nhat-v3?page=${S.page}`);
-    items = d?.items||[];
-    total = Math.ceil((d?.pagination?.totalItems||items.length*5)/(d?.pagination?.totalItemsPerPage||24));
-  } else {
-    const d = await api(`${API}/v1/api/danh-sach/${S.slug}?page=${S.page}`);
-    items = d?.data?.items||[];
-    const p = d?.data?.params?.pagination||{};
-    total = Math.ceil((p.totalItems||0)/(p.totalItemsPerPage||24));
-    const seo = d?.data?.seoOnPage?.titleHead;
-    if (seo) titleName = seo;
+// ══ LIST ══
+const TN={'phim-bo':'Phim Bộ','phim-le':'Phim Lẻ','tv-shows':'TV Shows','hoat-hinh':'Hoạt Hình','phim-vietsub':'Vietsub','phim-thuyet-minh':'Thuyết Minh','phim-long-tieng':'Lồng Tiếng','phim-moi':'Mới Cập Nhật'};
+const TL=['phim-bo','phim-le','tv-shows','hoat-hinh','phim-vietsub','phim-thuyet-minh','phim-long-tieng'];
+async function renderList(){
+  let items=[],total=0,name=TN[S.slug]||S.slug;
+  if(S.slug==='phim-moi'){
+    const d=await api(`${API}/danh-sach/phim-moi-cap-nhat-v3?page=${S.page}`);
+    items=d?.items||[];
+    total=Math.ceil((d?.pagination?.totalItems||0)/(d?.pagination?.totalItemsPerPage||24));
+  }else{
+    const d=await api(`${API}/v1/api/danh-sach/${S.slug}?page=${S.page}`);
+    items=d?.data?.items||[];
+    const pg=d?.data?.params?.pagination||{};
+    total=Math.ceil((pg.totalItems||0)/(pg.totalItemsPerPage||24));
+    if(d?.data?.seoOnPage?.titleHead)name=d.data.seoOnPage.titleHead;
   }
-  renderGridPage(titleName, items, total, TYPE_LIST.map(t=>[t,TYPES[t]]), 'list', S.slug);
+  gridPage(name,items,total,TL.map(t=>[t,TN[t]]),'list',S.slug);
 }
 
-async function renderGenre() {
-  const d = await api(`${API}/v1/api/the-loai/${S.slug}?page=${S.page}`);
-  const items = d?.data?.items||[];
-  const p = d?.data?.params?.pagination||{};
-  const total = Math.ceil((p.totalItems||0)/(p.totalItemsPerPage||24));
-  const name = d?.data?.seoOnPage?.titleHead || S.slug;
-  renderGridPage(`Thể Loại: ${name}`, items, total);
+// ══ GENRE / COUNTRY ══
+async function renderGenre(){
+  const d=await api(`${API}/v1/api/the-loai/${S.slug}?page=${S.page}`);
+  const items=d?.data?.items||[];
+  const pg=d?.data?.params?.pagination||{};
+  const total=Math.ceil((pg.totalItems||0)/(pg.totalItemsPerPage||24));
+  const name=d?.data?.titlePage||d?.data?.seoOnPage?.titleHead||S.slug;
+  gridPage(`🎭 ${name}`,items,total);
+}
+async function renderCountry(){
+  const d=await api(`${API}/v1/api/quoc-gia/${S.slug}?page=${S.page}`);
+  const items=d?.data?.items||[];
+  const pg=d?.data?.params?.pagination||{};
+  const total=Math.ceil((pg.totalItems||0)/(pg.totalItemsPerPage||24));
+  const name=d?.data?.titlePage||d?.data?.seoOnPage?.titleHead||S.slug;
+  gridPage(`🌏 ${name}`,items,total);
 }
 
-async function renderCountry() {
-  const d = await api(`${API}/v1/api/quoc-gia/${S.slug}?page=${S.page}`);
-  const items = d?.data?.items||[];
-  const p = d?.data?.params?.pagination||{};
-  const total = Math.ceil((p.totalItems||0)/(p.totalItemsPerPage||24));
-  const name = d?.data?.seoOnPage?.titleHead || S.slug;
-  renderGridPage(`Quốc Gia: ${name}`, items, total);
-}
+// ══ BROWSE GENRE / COUNTRY ══
+async function renderBrowse(type){
+  const app=document.getElementById('app');
+  const isGenre=type==='genre';
 
-async function renderSearch() {
-  const d = await api(`${API}/v1/api/tim-kiem?keyword=${encodeURIComponent(S.kw)}&page=${S.page}`);
-  const items = d?.data?.items||[];
-  const p = d?.data?.params?.pagination||{};
-  const total = Math.ceil((p.totalItems||0)/(p.totalItemsPerPage||24));
-  renderGridPage(`🔍 Kết quả: "${S.kw}"`, items, total, null, '', '', `${p.totalItems||0} phim`);
-}
-
-function renderGridPage(title, items, total, chips, chipNav, chipAct, sub='') {
-  const app = document.getElementById('app');
-  if (!items.length) {
-    app.innerHTML = `<div class="empty"><div class="ei">😔</div><p>Không có phim nào.</p></div>`;
-    return;
+  // Ensure list is loaded
+  if(isGenre&&!_genres){
+    const d=await api(`${API}/the-loai`);
+    _genres=Array.isArray(d)?d:[];
   }
-  const chipHtml = chips ? `<div class="chips">${chips.map(([s,n])=>`<span class="chip ${s===chipAct?'act':''}" onclick="go('${chipNav}','${s}')">${n}</span>`).join('')}</div>` : '';
-  app.innerHTML = `
-    <div class="pg-head">
-      ${chipHtml}
+  if(!isGenre&&!_countries){
+    const d=await api(`${API}/quoc-gia`);
+    _countries=Array.isArray(d)?d:[];
+  }
+
+  const list=isGenre?_genres:_countries;
+  // If S.slug empty, default to first item
+  const activeSlug=S.slug||(list[0]?.slug||'');
+
+  const apiUrl=isGenre
+    ?`${API}/v1/api/the-loai/${activeSlug}?page=${S.page}`
+    :`${API}/v1/api/quoc-gia/${activeSlug}?page=${S.page}`;
+  const d=await api(apiUrl);
+  const items=d?.data?.items||[];
+  const pg=d?.data?.params?.pagination||{};
+  const total=Math.ceil((pg.totalItems||0)/(pg.totalItemsPerPage||24));
+  const activeName=list.find(x=>x.slug===activeSlug)?.name||activeSlug;
+
+  const pills=list.map(x=>
+    `<span class="pill ${x.slug===activeSlug?'act':''}"
+     onclick="browseSelect('${type}','${x.slug}')">${x.name}</span>`
+  ).join('');
+
+  app.innerHTML=`
+    <div class="br-hero">
+      <div class="br-hero-bg"></div>
+      <div>
+        <div class="br-hero-ttl">${isGenre?'🎭 Thể Loại Phim':'🌏 Quốc Gia'}</div>
+        <div class="br-hero-sub">${isGenre?'Khám phá theo thể loại':'Phim theo quốc gia sản xuất'}</div>
+      </div>
+    </div>
+    <div style="padding-top:10px">
+      <div class="pill-grid">${pills}</div>
       <div class="sec-head">
-        <div class="sec-title">${title}</div>
-        <span style="color:var(--muted);font-size:12px">${sub||`Trang ${S.page}`}</span>
+        <div class="sec-ttl">${activeName}</div>
+        <span style="color:var(--mut);font-size:12px">${pg.totalItems||0} phim · Trang ${S.page}</span>
       </div>
-      <div class="grid">${items.map(cardHtml).join('')}</div>
-      ${pagesHtml(S.page, Math.min(total,50))}
+      ${items.length
+        ?`<div class="grid">${items.map(card).join('')}</div>${pages(S.page,Math.min(total,50))}`
+        :`<div class="empty"><div class="ei">😔</div><p>Không có phim nào.</p></div>`}
     </div>`;
 }
+window.browseSelect=function(type,slug){
+  S.slug=slug;S.page=1;
+  history.pushState(null,'',`#browse-${type}/${slug}`);
+  renderBrowse(type);
+};
 
-// ── DETAIL (MOVIE) PAGE ──
-async function renderMovie() {
-  const app = document.getElementById('app');
-  let data = movieCache[S.slug];
-  if (!data) {
-    data = await api(`${API}/phim/${S.slug}`);
-    if (data) movieCache[S.slug] = data;
-  }
-  if (!data?.movie) {
-    app.innerHTML = `<div class="empty"><div class="ei">⚠️</div><p>Không tải được thông tin phim.</p></div>`;
+// ══ SEARCH ══
+async function renderSearch(){
+  const d=await api(`${API}/v1/api/tim-kiem?keyword=${encodeURIComponent(S.kw)}&page=${S.page}`);
+  const items=d?.data?.items||[];
+  const pg=d?.data?.params?.pagination||{};
+  const total=Math.ceil((pg.totalItems||0)/(pg.totalItemsPerPage||24));
+  gridPage(`🔍 "${S.kw}"`,items,total,null,'','',`${pg.totalItems||0} phim`);
+}
+
+function gridPage(title,items,total,chips,cNav,cAct,sub=''){
+  const app=document.getElementById('app');
+  const chipHtml=chips?`<div class="chips">${chips.map(([s,n])=>`<span class="chip ${s===cAct?'act':''}" onclick="go('${cNav}','${s}')">${n}</span>`).join('')}</div>`:'';
+  if(!items.length){
+    app.innerHTML=`<div class="pg-pad">${chipHtml}<div class="empty"><div class="ei">😔</div><p>Không có phim nào.</p></div></div>`;
     return;
   }
-  const m = data.movie;
-  const eps = data.episodes||[];
-  document.title = `${m.name} – PhimHay`;
-
-  const thumb = imgUrl(m.thumb_url||m.poster_url);
-  const poster = imgUrl(m.poster_url||m.thumb_url);
-  const genres = (m.category||[]).map(c=>`<span class="dtag" onclick="go('genre','${c.slug}')">${c.name}</span>`).join('');
-  const countries = (m.country||[]).map(c=>`<span class="dtag" onclick="go('country','${c.slug}')">${c.name}</span>`).join('');
-  const rating = m.tmdb?.vote_average ? `<span class="star" style="color:var(--gold)">★ ${m.tmdb.vote_average.toFixed(1)}</span>` : '';
-  const actors = (m.actor||[]).slice(0,6).join(', ');
-
-  let epSection = '';
-  if (eps.length) {
-    const serverBtns = eps.map((srv,si)=>
-      `<button class="stab act" id="dstab-${si}" onclick="selectDetailServer(${si})">${srv.server_name}</button>`
-    ).join('');
-    const firstEps = eps[0]?.server_data||[];
-    const epBtns = firstEps.map((ep,ei)=>
-      `<button class="ep-btn" onclick="go('watch','${m.slug}',0,${ei})">${ep.name}</button>`
-    ).join('');
-    epSection = `
-      <div class="detail-eps">
-        <div class="det-sub">Server</div>
-        <div class="server-tabs" id="dServerTabs">${serverBtns}</div>
-        <div class="det-sub">Tập Phim</div>
-        <div class="ep-scroll" id="dEpList">${epBtns}</div>
-        <div style="margin-top:14px">
-          <button class="btn-play" onclick="go('watch','${m.slug}',0,0)">▶ Xem Tập Đầu</button>
-        </div>
-      </div>`;
-  }
-
-  app.innerHTML = `
-    <div class="detail-layout">
-      <div class="detail-hero">
-        <img src="${thumb}" alt="${m.name}" onerror="fallbackImg(event)">
-        <div class="detail-hero-grad"></div>
-      </div>
-      <div class="detail-body">
-        <div>
-          <div class="detail-poster"><img src="${poster}" alt="${m.name}" onerror="fallbackImg(event)"></div>
-        </div>
-        <div class="detail-info">
-          <div class="detail-title">${m.name}</div>
-          <div class="detail-orig">${m.origin_name||''}</div>
-          <div class="detail-meta">
-            ${rating}
-            <span>${m.year||''}</span>
-            <span>${m.time||''}</span>
-            <span class="mtag">${m.quality||'HD'}</span>
-            <span class="mtag">${m.lang||''}</span>
-            ${m.episode_current?`<span style="color:var(--gold)">${m.episode_current}</span>`:''}
-          </div>
-          <div class="detail-tags">${genres}${countries}</div>
-          <p class="detail-desc">${(m.content||'').replace(/<[^>]+>/g,'')}</p>
-          ${actors?`<div class="watch-cast">Diễn viên: <span>${actors}</span></div>`:''}
-          ${epSection}
-        </div>
-      </div>
-    </div>`;
-
-  window._detailEps = eps;
-  window._detailSlug = m.slug;
+  app.innerHTML=`<div class="pg-pad">
+    ${chipHtml}
+    <div class="sec-head">
+      <div class="sec-ttl">${title}</div>
+      <span style="color:var(--mut);font-size:12px">${sub||`Trang ${S.page}`}</span>
+    </div>
+    <div class="grid">${items.map(card).join('')}</div>
+    ${pages(S.page,Math.min(total,50))}
+  </div>`;
 }
 
-window.selectDetailServer = function(si) {
-  const eps = window._detailEps || [];
-  const slug = window._detailSlug;
-  document.querySelectorAll('[id^="dstab-"]').forEach((b,i)=>{
-    b.classList.toggle('act', i===si);
-  });
-  const serverEps = eps[si]?.server_data||[];
-  document.getElementById('dEpList').innerHTML =
-    serverEps.map((ep,ei)=>`<button class="ep-btn" onclick="go('watch','${slug}',${si},${ei})">${ep.name}</button>`).join('');
-};
-
-// ── WATCH PAGE ──
-async function renderWatch() {
-  const app = document.getElementById('app');
-  let data = movieCache[S.slug];
-  if (!data) {
-    data = await api(`${API}/phim/${S.slug}`);
-    if (data) movieCache[S.slug] = data;
-  }
-  if (!data?.movie) {
-    app.innerHTML = `<div class="empty"><div class="ei">⚠️</div><p>Không tải được phim.</p></div>`;
-    return;
-  }
-
-  const m = data.movie;
-  const eps = data.episodes||[];
-  const si = Math.min(S.serverIdx, eps.length-1);
-  const server = eps[si];
-  const allEps = server?.server_data||[];
-  const ei = Math.min(S.epIdx, allEps.length-1);
-  const ep = allEps[ei];
-  
-  // 🔥 CHUYỂN HƯỚNG M3U8 QUA SERVICE WORKER PROXY ĐỂ CHẶN QUẢNG CÁO
-  let m3u8 = ep?.link_m3u8||'';
-  if (m3u8 && m3u8.startsWith('http')) {
-    m3u8 = `${PROXY_PREFIX}?url=${encodeURIComponent(m3u8)}`;
-  }
-
-  document.title = `${m.name} – ${ep?.name||''} – PhimHay`;
-
-  const genreSlug = m.category?.[0]?.slug;
-  let related = [];
-  if (genreSlug) {
-    const rd = await api(`${API}/v1/api/the-loai/${genreSlug}?page=1`);
-    related = (rd?.data?.items||[]).filter(x=>x.slug!==m.slug).slice(0,10);
-  }
-
-  const serverTabsHtml = eps.map((srv,i)=>
-    `<button class="stab ${i===si?'act':''}" onclick="switchServer(${i})">${srv.server_name}</button>`
-  ).join('');
-
-  const epBtnsHtml = allEps.map((e,i)=>
-    `<button class="ep-btn ${i===ei?'act':''}" onclick="switchEp(${i})" id="epb-${i}">${e.name}</button>`
-  ).join('');
-
-  const sideHtml = related.map(r=>`
-    <div class="side-card" onclick="go('movie','${r.slug}')">
-      <div class="side-thumb"><img src="${imgUrl(r.thumb_url||r.poster_url)}" alt="${r.name}" onerror="fallbackImg(event)"></div>
-      <div class="side-info">
-        <div class="side-name">${r.name}</div>
-        <div class="side-sub">${r.year||''} · ${r.quality||'HD'}</div>
-        <div class="side-sub" style="color:var(--accent);font-weight:600">${r.episode_current||''}</div>
-      </div>
-    </div>`).join('');
-
-  const actors = (m.actor||[]).slice(0,5).join(', ');
-  const genres = (m.category||[]).map(c=>c.name).join(', ');
-
-  app.innerHTML = `
-    <div class="watch-layout">
-      <div class="watch-main">
-        <div class="watch-back" onclick="go('movie','${m.slug}')">← Quay lại ${m.name}</div>
-
-        <div class="player-wrap" id="playerWrap">
-          ${m3u8
-            ? `<media-player title="${m.name} – ${ep?.name||''}"
-                             src="${m3u8}"
-                             playsinline autoplay crossorigin>
-                 <media-provider></media-provider>
-                 <media-video-layout></media-video-layout>
-               </media-player>`
-            : ep?.link_embed
-              ? `<iframe src="${ep.link_embed}" style="width:100%;height:100%;border:none" allowfullscreen></iframe>`
-              : `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted);text-align:center"><p>Không có stream cho tập này.</p></div>`
-          }
-        </div>
-
-        <div class="watch-title">${m.name}</div>
-        <div class="watch-orig">${m.origin_name||''}</div>
-        <div class="watch-meta">
-          ${m.tmdb?.vote_average?`<span class="star" style="color:var(--gold)">★ ${m.tmdb.vote_average.toFixed(1)}</span>`:''}
-          <span>${m.year||''}</span>
-          <span>${m.time||''}</span>
-          <span class="mtag">${m.quality||'HD'}</span>
-          <span class="mtag">${m.lang||''}</span>
-          ${ep?`<span style="color:var(--accent);font-weight:700">${ep.name}</span>`:''}
-        </div>
-
-        ${eps.length>1||eps[0]?.server_data?.length>1?`
-          <div class="det-sub" style="margin-top:4px">Server</div>
-          <div class="server-tabs">${serverTabsHtml}</div>
-          ${allEps.length>1?`
-            <div class="det-sub">Tập Phim</div>
-            <div class="ep-scroll">${epBtnsHtml}</div>
-          `:''}
-        `:''}
-
-        <p class="watch-desc" style="margin-top:16px">${(m.content||'').replace(/<[^>]+>/g,'')}</p>
-        ${actors?`<div class="watch-cast">Diễn viên: <span>${actors}</span></div>`:''}
-        ${genres?`<div class="watch-cast" style="margin-top:4px">Thể loại: <span>${genres}</span></div>`:''}
-      </div>
-
-      <div class="watch-side">
-        <div class="side-title">Có Thể Bạn Thích</div>
-        <div class="side-list">${sideHtml || '<p style="color:var(--muted);font-size:12px">Đang tải...</p>'}</div>
-      </div>
+// ══ MOVIE DETAIL ══
+async function renderMovie(){
+  const app=document.getElementById('app');
+  if(!MC[S.slug]){const d=await api(`${API}/phim/${S.slug}`);if(d)MC[S.slug]=d}
+  const data=MC[S.slug];
+  if(!data?.movie){app.innerHTML=`<div class="empty"><div class="ei">⚠️</div><p>Không tải được phim.</p></div>`;return}
+  const m=data.movie,eps=data.episodes||[];
+  document.title=`${m.name} – PhimHay`;
+  const genres=(m.category||[]).map(c=>`<span class="dtag" onclick="go('genre','${c.slug}')">${c.name}</span>`).join('');
+  const countries=(m.country||[]).map(c=>`<span class="dtag" onclick="go('country','${c.slug}')">${c.name}</span>`).join('');
+  const rating=m.tmdb?.vote_average?`<span style="color:var(--gold)">★ ${m.tmdb.vote_average.toFixed(1)}</span>`:'';
+  let epSec='';
+  if(eps.length){
+    const sBtns=eps.map((s,i)=>`<button class="stab ${i===0?'act':''}" id="ds-${i}" onclick="detailSrv(${i})">${s.server_name}</button>`).join('');
+    const eBtns=(eps[0]?.server_data||[]).map((e,i)=>`<button class="ep-btn" onclick="go('watch','${m.slug}',0,${i})">${e.name}</button>`).join('');
+    epSec=`<div class="d-eps">
+      <div class="sub-lbl">Server</div>
+      <div class="stabs" id="d-stabs">${sBtns}</div>
+      <div class="sub-lbl">Tập Phim</div>
+      <div class="ep-scroll" id="d-eps">${eBtns}</div>
+      <div style="margin-top:14px"><button class="btn-play" onclick="go('watch','${m.slug}',0,0)">▶ Xem Tập Đầu</button></div>
     </div>`;
-
-  setTimeout(()=>{
-    const btn = document.getElementById(`epb-${ei}`);
-    if (btn) btn.scrollIntoView({block:'nearest'});
-  }, 100);
-
-  window._watchEps = eps;
-  window._watchSlug = m.slug;
-}
-
-window.switchServer = function(si) {
-  pushState({...S, serverIdx: si, epIdx: 0});
-};
-window.switchEp = function(ei) {
-  pushState({...S, epIdx: ei});
-};
-
-// ── PAGINATION ──
-function pagesHtml(cur, total) {
-  if (total <= 1) return '';
-  let pages = [];
-  if (total <= 7) { pages = Array.from({length:total},(_,i)=>i+1); }
-  else {
-    pages = [1];
-    if (cur > 3) pages.push('…');
-    for (let i=Math.max(2,cur-1); i<=Math.min(total-1,cur+1); i++) pages.push(i);
-    if (cur < total-2) pages.push('…');
-    pages.push(total);
   }
-  const btns = pages.map(p =>
-    p==='…' ? `<span class="pg" style="cursor:default">…</span>`
-             : `<button class="pg ${p===cur?'act':''}" onclick="goPage(${p})">${p}</button>`
-  ).join('');
-  return `<div class="pages">
+  app.innerHTML=`<div class="dl">
+    <div class="dh">
+      <img src="${imgUrl(m.thumb_url||m.poster_url)}" alt="${m.name}" onerror="noImg(event)">
+      <div class="dh-grad"></div>
+    </div>
+    <div class="db">
+      <div><div class="d-poster"><img src="${imgUrl(m.poster_url||m.thumb_url)}" alt="${m.name}" onerror="noImg(event)"></div></div>
+      <div class="d-info">
+        <div class="d-title">${m.name}</div>
+        <div class="d-orig">${m.origin_name||''}</div>
+        <div class="d-meta">${rating}<span>${m.year||''}</span><span>${m.time||''}</span><span class="mtag">${m.quality||'HD'}</span><span class="mtag">${m.lang||''}</span>${m.episode_current?`<span style="color:var(--gold)">${m.episode_current}</span>`:''}</div>
+        <div class="d-tags">${genres}${countries}</div>
+        <p class="d-desc">${(m.content||'').replace(/<[^>]+>/g,'')}</p>
+        ${(m.actor||[]).length?`<div class="w-cast">Diễn viên: <span>${(m.actor||[]).slice(0,6).join(', ')}</span></div>`:''}
+        ${epSec}
+      </div>
+    </div>
+  </div>`;
+  window._dEps=eps; window._dSlug=m.slug;
+}
+window.detailSrv=function(i){
+  const eps=window._dEps||[],slug=window._dSlug;
+  document.querySelectorAll('[id^="ds-"]').forEach((b,j)=>b.classList.toggle('act',j===i));
+  document.getElementById('d-eps').innerHTML=(eps[i]?.server_data||[]).map((e,j)=>`<button class="ep-btn" onclick="go('watch','${slug}',${i},${j})">${e.name}</button>`).join('');
+};
+
+// ══ WATCH ══
+async function renderWatch(){
+  const app=document.getElementById('app');
+  if(!MC[S.slug]){const d=await api(`${API}/phim/${S.slug}`);if(d)MC[S.slug]=d}
+  const data=MC[S.slug];
+  if(!data?.movie){app.innerHTML=`<div class="empty"><div class="ei">⚠️</div><p>Không tải được phim.</p></div>`;return}
+  const m=data.movie,eps=data.episodes||[];
+  const si=Math.max(0,Math.min(S.si,eps.length-1));
+  const srv=eps[si];
+  const allEps=srv?.server_data||[];
+  const ei=Math.max(0,Math.min(S.ei,allEps.length-1));
+  const ep=allEps[ei];
+  const m3u8=ep?.link_m3u8||'';
+  document.title=`${m.name} – ${ep?.name||''} – PhimHay`;
+
+  // related
+  let related=[];
+  const gs=m.category?.[0]?.slug;
+  if(gs){const rd=await api(`${API}/v1/api/the-loai/${gs}?page=1`);related=(rd?.data?.items||[]).filter(x=>x.slug!==m.slug).slice(0,10)}
+
+  const sTabs=eps.map((s,i)=>`<button class="stab ${i===si?'act':''}" onclick="swSrv(${i})">${s.server_name}</button>`).join('');
+  const eBtns=allEps.map((e,i)=>`<button class="ep-btn ${i===ei?'act':''}" onclick="swEp(${i})" id="eb-${i}">${e.name}</button>`).join('');
+  const side=related.map(r=>`<div class="side-card" onclick="go('movie','${r.slug}')">
+    <div class="side-thumb"><img src="${imgUrl(r.thumb_url||r.poster_url)}" alt="${r.name}" onerror="noImg(event)"></div>
+    <div class="side-info"><div class="side-name">${r.name}</div><div class="side-sub">${r.year||''} · ${r.quality||'HD'}</div><div class="side-sub" style="color:var(--accent);font-weight:600">${r.episode_current||''}</div></div>
+  </div>`).join('');
+
+  app.innerHTML=`<div class="wl">
+    <div class="w-main">
+      <div class="w-back" onclick="go('movie','${m.slug}')">← Quay lại ${m.name}</div>
+      <div class="player-wrap">
+        ${m3u8
+          ?`<media-player title="${m.name}" src="${m3u8}" playsinline autoplay crossorigin><media-provider></media-provider><media-video-layout></media-video-layout></media-player>`
+          :ep?.link_embed
+            ?`<iframe src="${ep.link_embed}" style="width:100%;height:100%;border:none" allowfullscreen></iframe>`
+            :`<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--mut)">Không có stream</div>`}
+      </div>
+      <div class="w-title">${m.name}</div>
+      <div class="w-orig">${m.origin_name||''}</div>
+      <div class="w-meta">
+        ${m.tmdb?.vote_average?`<span style="color:var(--gold)">★ ${m.tmdb.vote_average.toFixed(1)}</span>`:''}
+        <span>${m.year||''}</span><span>${m.time||''}</span>
+        <span class="mtag">${m.quality||'HD'}</span><span class="mtag">${m.lang||''}</span>
+        ${ep?`<span style="color:var(--accent);font-weight:700">${ep.name}</span>`:''}
+      </div>
+      ${eps.length||allEps.length>1?`
+        <div class="sub-lbl">Server</div><div class="stabs">${sTabs}</div>
+        ${allEps.length>1?`<div class="sub-lbl">Tập Phim</div><div class="ep-scroll">${eBtns}</div>`:''}`:''}
+      <p class="w-desc" style="margin-top:14px">${(m.content||'').replace(/<[^>]+>/g,'')}</p>
+      ${(m.actor||[]).length?`<div class="w-cast">Diễn viên: <span>${(m.actor||[]).slice(0,5).join(', ')}</span></div>`:''}
+      ${(m.category||[]).length?`<div class="w-cast" style="margin-top:4px">Thể loại: <span>${(m.category||[]).map(c=>c.name).join(', ')}</span></div>`:''}
+    </div>
+    <div class="w-side">
+      <div class="side-ttl">Có Thể Bạn Thích</div>
+      <div class="side-list">${side||'<p style="color:var(--mut);font-size:12px">Đang tải...</p>'}</div>
+    </div>
+  </div>`;
+  setTimeout(()=>{const b=document.getElementById(`eb-${ei}`);if(b)b.scrollIntoView({block:'nearest'})},100);
+}
+window.swSrv=function(i){S.si=i;S.ei=0;history.pushState(null,'',sToHash(S));renderWatch()};
+window.swEp=function(i){S.ei=i;history.pushState(null,'',sToHash(S));renderWatch()};
+
+// ══ PAGES ══
+function pages(cur,total){
+  if(total<=1)return'';
+  let ps=[];
+  if(total<=7){ps=Array.from({length:total},(_,i)=>i+1)}
+  else{ps=[1];if(cur>3)ps.push('…');for(let i=Math.max(2,cur-1);i<=Math.min(total-1,cur+1);i++)ps.push(i);if(cur<total-2)ps.push('…');ps.push(total)}
+  return`<div class="pages">
     <button class="pg" ${cur<=1?'disabled':''} onclick="goPage(${cur-1})">‹</button>
-    ${btns}
+    ${ps.map(p=>p==='…'?`<span class="pg" style="cursor:default">…</span>`:`<button class="pg ${p===cur?'act':''}" onclick="goPage(${p})">${p}</button>`).join('')}
     <button class="pg" ${cur>=total?'disabled':''} onclick="goPage(${cur+1})">›</button>
   </div>`;
 }
 
-// ── BOOT ──
+// ══ BOOT ══
 loadMenus();
-const initHash = location.hash || '#home';
-const initS = hashToState(initHash);
-if (initS.view === 'search') initS.kw = decodeURIComponent(initS.slug);
-S = initS;
+const initS=hashToS(location.hash||'#home');
+if(initS.view==='search')initS.kw=decodeURIComponent(initS.slug);
+S=initS;
 render();
 </script>
 </body>
